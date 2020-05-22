@@ -1,0 +1,23 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "keywords": [
+    "hrm"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.12.0",
+    "koa-body": "^4.1.2",
+    "koa-router": "^8.0.8",
+    "sequelize": "^5.21.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
