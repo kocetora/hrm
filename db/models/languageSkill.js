@@ -1,6 +1,7 @@
-const Sequelize = require('sequelize')
-const sequelize = require('../db.js')
-const Form = require('../form');
+'use strict';
+const Sequelize = require('sequelize');
+const sequelize = require('../db.js');
+const Form = require('./form');
 
 const LanguageSkill = sequelize.define('languageSkill', {
     languageid: {
@@ -26,8 +27,12 @@ const LanguageSkill = sequelize.define('languageSkill', {
     }
 }, { timestamps: false });
 
-const Form_LanguageSkill = sequelize.define('Form_LanguageSkill', {}, { timestamps: false });
+const Form_LanguageSkill = sequelize.define('form_languageSkill', {}, { timestamps: false });
 Form.belongsToMany(LanguageSkill, { through: Form_LanguageSkill });
 LanguageSkill.belongsToMany(Form, { through: Form_LanguageSkill });
+
+sequelize.sync({force:true}).then(()=>{
+    console.log("Tables have been created");
+  }).catch(err=>console.log(err));
 
 module.exports = LanguageSkill;

@@ -1,6 +1,7 @@
-const Sequelize = require('sequelize')
-const sequelize = require('../db.js')
-const Form = require('../form');
+'use strict';
+const Sequelize = require('sequelize');
+const sequelize = require('../db.js');
+const Form = require('./form');
 
 const Profession = sequelize.define('prodession', {
     professionid: {
@@ -22,13 +23,13 @@ const Profession = sequelize.define('prodession', {
     }
 }, { timestamps: false });
 
-const Form_Profession = sequelize.define('Form_Profession', {}, { timestamps: false });
+const Form_Profession = sequelize.define('form_profession', {}, { timestamps: false });
 Form.belongsToMany(Profession, { through: Form_Profession });
 Profession.belongsToMany(Form, { through: Form_Profession });
 
+sequelize.sync({force:true}).then(()=>{
+    console.log("Tables have been created");
+  }).catch(err=>console.log(err));
+
 module.exports = Profession;
 
-// sequelize.sync({force:true}).then(()=>{
-//     console.log("Tables have been created");
-//   }).catch(err=>console.log(err));
-  

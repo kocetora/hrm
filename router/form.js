@@ -17,14 +17,35 @@ const LanguageSkill = require('../db/models/languageSkill');
 
 // получает все формы 
 router.get('/api/forms', async ctx => {
-  await Form.findAll()
+  await Form.findAll({
+    include: [
+      {
+        model: Profession,
+        through: {
+          attributes: []
+        }
+      },
+      {
+        model: Messenger,
+        through: {
+          attributes: []
+        }
+      },
+      {
+        model: Messenger,
+        through: {
+          attributes: []
+        }
+      },
+    ]
+  })
     .then(forms => {
       ctx.body = forms
     })
     .catch(err => {
       ctx.body = 'error: ' + err
     })
-})
+});
 
 // получает форму по идетентефикаору
 router.get('/api/form/:customerid', async ctx => {
@@ -43,7 +64,7 @@ router.get('/api/form/:customerid', async ctx => {
     .catch(err => {
       ctx.body = 'error: ' + err
     })
-})
+});
 
 // требует доработки
 // создает форму
@@ -68,7 +89,7 @@ router.post('/api/form', async ctx => {
       .catch(err => {
         ctx.body = 'error: ' + err
       })
-})
+});
 
 // удаляет форму
 router.delete('/api/form/:customerid', async ctx => {
@@ -83,7 +104,7 @@ router.delete('/api/form/:customerid', async ctx => {
     .catch(err => {
       ctx.body = 'error: ' + err
     })
-})
+});
 
 // требует доработки
 // обновляет форму
@@ -106,9 +127,9 @@ router.put('/api/form/:customerid', async ctx => {
         ctx.body = 'error: ' + err
       })
   }
-})
+});
 
 // требует проработки
 // ищет нужные формы
 
-module.exports = router
+module.exports = router;

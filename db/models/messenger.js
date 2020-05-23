@@ -1,6 +1,7 @@
-const Sequelize = require('sequelize')
-const sequelize = require('../db.js')
-const Form = require('../form');
+'use strict';
+const Sequelize = require('sequelize');
+const sequelize = require('../db.js');
+const Form = require('./form');
 
 const Messenger = sequelize.define('messenger', {
     messengerid: {
@@ -21,9 +22,14 @@ const Messenger = sequelize.define('messenger', {
     }
 }, { timestamps: false });
 
-const Form_Messenger = sequelize.define('Form_Messenger', {}, { timestamps: false });
+const Form_Messenger = sequelize.define('form_messenger', {}, { timestamps: false });
 Form.belongsToMany(Messenger, { through: Form_Messenger });
 Messenger.belongsToMany(Form, { through: Form_Messenger });
+
+sequelize.sync({force:true}).then(()=>{
+    console.log("Tables have been created");
+  }).catch(err=>console.log(err));
+  
 
 module.exports = Messenger;
     
