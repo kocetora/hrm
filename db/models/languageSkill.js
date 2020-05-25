@@ -22,8 +22,7 @@ const LanguageSkill = sequelize.define('languageSkill', {
             'native', 
             'fluent', 
             'intermediate', 
-            'basic',
-            'none'],
+            'basic'],
     }
 }, { timestamps: false });
 

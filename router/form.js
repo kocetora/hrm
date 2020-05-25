@@ -7,31 +7,6 @@ const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
 // требует доработки
-// создает форму
-router.post('/api/form', async ctx => {
-    console.log(ctx.request.body);
-    await Form.create(ctx.request.body)
-      .then(data => {
-        ctx.body = data
-
-        async ctx => {
-          console.log(ctx.request.body);
-          await Profession.create(ctx.request.body)
-            .then(data => {
-              ctx.body = data
-            })
-            .catch(err => {
-              ctx.body = 'error: ' + err
-            })
-      }
-
-      })
-      .catch(err => {
-        ctx.body = 'error: ' + err
-      })
-});
-
-// требует доработки
 // обновляет форму
 router.put('/api/form/:formid', async ctx => {
     //
@@ -55,6 +30,34 @@ router.put('/api/form/:formid', async ctx => {
 });
 
 // ищет нужные формы
+
+// создает форму
+router.post('/api/form', async ctx => {
+  const body = JSON.parse(ctx.request.body);
+  const formBody = JSON.parse(ctx.request.body);
+  delete formBody['professions'];
+  delete formBody['languageSkills'];
+  delete formBody['messengers'];
+    console.log(body);
+    await Promise.all([
+      Form.create(formBody),
+      Profession.bulkCreate(body['professions']),
+      LanguageSkill.bulkCreate(body['languageSkills']),
+      Messenger.bulkCreate(body['messengers'])
+    ])
+      .then(([form, professions, languageSkills, messengers]) => {
+        form.addProfessions(professions);
+        form.addMessengers(messengers);
+        form.addLanguageSkills(languageSkills);
+        return [form, professions, languageSkills, messengers];
+      })
+      .then(data => {
+        ctx.body = data;
+      })
+      .catch(err => {
+        ctx.body = 'error: ' + err
+      })
+});
 
 // получает все формы 
 router.get('/api/forms', async ctx => {
