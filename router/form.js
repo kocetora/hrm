@@ -33,7 +33,7 @@ router.post('/api/form', async ctx => {
 
 // требует доработки
 // обновляет форму
-router.put('/api/form/:customerid', async ctx => {
+router.put('/api/form/:formid', async ctx => {
     //
   if (!ctx.request.body.firstname) {
     ctx.body = {
@@ -43,7 +43,7 @@ router.put('/api/form/:customerid', async ctx => {
     await Form.update(
         //
       { firstname: ctx.request.body.firstname },
-      { where: { customerid: ctx.params.customerid } }
+      { where: { formid: ctx.params.formid } }
     )
       .then(() => {
         ctx.body = { status: 'Form Updated!' }
@@ -89,10 +89,10 @@ router.get('/api/forms', async ctx => {
 });
 
 // получает форму по идетентефикаору
-router.get('/api/form/:customerid', async ctx => {
+router.get('/api/form/:formid', async ctx => {
   await Form.findOne({
     where: {
-      customerid: ctx.params.customerid
+      formid: ctx.params.formid
     },
     include: [
       {
@@ -128,10 +128,10 @@ router.get('/api/form/:customerid', async ctx => {
 });
 
 // удаляет форму
-router.delete('/api/form/:customerid', async ctx => {
+router.delete('/api/form/:formid', async ctx => {
   await Form.destroy({
     where: {
-        customerid: ctx.params.customerid
+        formid: ctx.params.formid
     }
   })
     .then(() => {
