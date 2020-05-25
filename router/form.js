@@ -108,7 +108,7 @@ router.get('/api/form/:formid', async ctx => {
         }
       },
       {
-        model: Messenger,
+        model: LanguageSkill,
         through: {
           attributes: []
         }
