@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const sequelize = require('../db.js');
 const Form = require('./form');
 
-const Profession = sequelize.define('prodession', {
+const Profession = sequelize.define('profession', {
     professionid: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -27,9 +27,9 @@ const Form_Profession = sequelize.define('form_profession', {}, { timestamps: fa
 Form.belongsToMany(Profession, { through: Form_Profession });
 Profession.belongsToMany(Form, { through: Form_Profession });
 
-sequelize.sync({force:true}).then(()=>{
-    console.log("Tables have been created");
-  }).catch(err=>console.log(err));
+// sequelize.sync({force:true}).then(()=>{
+//     console.log("Tables have been created");
+//   }).catch(err=>console.log(err));
 
 module.exports = Profession;
 

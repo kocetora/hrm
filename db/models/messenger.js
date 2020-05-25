@@ -26,9 +26,9 @@ const Form_Messenger = sequelize.define('form_messenger', {}, { timestamps: fals
 Form.belongsToMany(Messenger, { through: Form_Messenger });
 Messenger.belongsToMany(Form, { through: Form_Messenger });
 
-sequelize.sync({force:true}).then(()=>{
-    console.log("Tables have been created");
-  }).catch(err=>console.log(err));
+// sequelize.sync({force:true}).then(()=>{
+//     console.log("Tables have been created");
+//   }).catch(err=>console.log(err));
   
 
 module.exports = Messenger;

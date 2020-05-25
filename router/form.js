@@ -6,66 +6,6 @@ const Profession = require('../db/models/profession');
 const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
-// Form.findOne({
-//     include: {
-//       model: Profession,
-//       through: {
-//         attributes: []
-//       }
-//     }
-//   });
-
-// получает все формы 
-router.get('/api/forms', async ctx => {
-  await Form.findAll({
-    include: [
-      {
-        model: Profession,
-        through: {
-          attributes: []
-        }
-      },
-      {
-        model: Messenger,
-        through: {
-          attributes: []
-        }
-      },
-      {
-        model: Messenger,
-        through: {
-          attributes: []
-        }
-      },
-    ]
-  })
-    .then(forms => {
-      ctx.body = forms
-    })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
-});
-
-// получает форму по идетентефикаору
-router.get('/api/form/:customerid', async ctx => {
-  await Form.findOne({
-    where: {
-      customerid: ctx.params.customerid
-    }
-  })
-    .then(form => {
-      if (form) {
-        ctx.body = form
-      } else {
-        ctx.body = 'Form does not exist'
-      }
-    })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
-});
-
 // требует доработки
 // создает форму
 router.post('/api/form', async ctx => {
@@ -91,21 +31,6 @@ router.post('/api/form', async ctx => {
       })
 });
 
-// удаляет форму
-router.delete('/api/form/:customerid', async ctx => {
-  await Form.destroy({
-    where: {
-        customerid: ctx.params.customerid
-    }
-  })
-    .then(() => {
-      ctx.body = { status: 'Form Deleted!' }
-    })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
-});
-
 // требует доработки
 // обновляет форму
 router.put('/api/form/:customerid', async ctx => {
@@ -129,7 +54,92 @@ router.put('/api/form/:customerid', async ctx => {
   }
 });
 
-// требует проработки
 // ищет нужные формы
+
+// получает все формы 
+router.get('/api/forms', async ctx => {
+  await Form.findAll({
+    include: [
+      {
+        model: Profession,
+        through: {
+          attributes: []
+        }
+      },
+      {
+        model: Messenger,
+        through: {
+          attributes: []
+        }
+      },
+      {
+        model: LanguageSkill,
+        through: {
+          attributes: []
+        }
+      },
+    ]
+  })
+    .then(forms => {
+      ctx.body = forms
+    })
+    .catch(err => {
+      ctx.body = 'error: ' + err
+    })
+});
+
+// получает форму по идетентефикаору
+router.get('/api/form/:customerid', async ctx => {
+  await Form.findOne({
+    where: {
+      customerid: ctx.params.customerid
+    },
+    include: [
+      {
+        model: Profession,
+        through: {
+          attributes: []
+        }
+      },
+      {
+        model: Messenger,
+        through: {
+          attributes: []
+        }
+      },
+      {
+        model: Messenger,
+        through: {
+          attributes: []
+        }
+      },
+    ]
+  })
+    .then(form => {
+      if (form) {
+        ctx.body = form
+      } else {
+        ctx.body = 'Form does not exist'
+      }
+    })
+    .catch(err => {
+      ctx.body = 'error: ' + err
+    })
+});
+
+// удаляет форму
+router.delete('/api/form/:customerid', async ctx => {
+  await Form.destroy({
+    where: {
+        customerid: ctx.params.customerid
+    }
+  })
+    .then(() => {
+      ctx.body = { status: 'Form Deleted!' }
+    })
+    .catch(err => {
+      ctx.body = 'error: ' + err
+    })
+});
 
 module.exports = router;
