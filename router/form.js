@@ -6,27 +6,30 @@ const Profession = require('../db/models/profession');
 const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
+    //
+    // await Form.update(
+    //   { firstname: ctx.request.body.firstname },
+    //   { where: { formid: ctx.params.formid } }
+    // )
+
 // требует доработки
 // обновляет форму
 router.put('/api/form/:formid', async ctx => {
-    //
-  if (!ctx.request.body.firstname) {
-    ctx.body = {
-      error: 'Bad Data'
-    }
-  } else {
-    await Form.update(
-        //
-      { firstname: ctx.request.body.firstname },
-      { where: { formid: ctx.params.formid } }
-    )
+    // const body = JSON.parse(ctx.request.body);
+    const formBody = JSON.parse(ctx.request.body);
+    delete formBody['professions'];
+    delete formBody['languageSkills'];
+    delete formBody['messengers'];
+      await Promise.all([
+        Form.update( formBody, 
+          { where: { formid: ctx.params.formid } })
+      ])
       .then(() => {
         ctx.body = { status: 'Form Updated!' }
       })
       .catch(err => {
         ctx.body = 'error: ' + err
       })
-  }
 });
 
 // ищет нужные формы
@@ -38,7 +41,6 @@ router.post('/api/form', async ctx => {
   delete formBody['professions'];
   delete formBody['languageSkills'];
   delete formBody['messengers'];
-    console.log(body);
     await Promise.all([
       Form.create(formBody),
       Profession.bulkCreate(body['professions']),
