@@ -6,38 +6,12 @@ const Profession = require('../db/models/profession');
 const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
-    //
-    // await Form.update(
-    //   { firstname: ctx.request.body.firstname },
-    //   { where: { formid: ctx.params.formid } }
-    // )
-
-// требует доработки
-// обновляет форму
-router.put('/api/form/:formid', async ctx => {
-    // const body = JSON.parse(ctx.request.body);
-    const formBody = JSON.parse(ctx.request.body);
-    delete formBody['professions'];
-    delete formBody['languageSkills'];
-    delete formBody['messengers'];
-      await Promise.all([
-        Form.update( formBody, 
-          { where: { formid: ctx.params.formid } })
-      ])
-      .then(() => {
-        ctx.body = { status: 'Form Updated!' }
-      })
-      .catch(err => {
-        ctx.body = 'error: ' + err
-      })
-});
-
 // ищет нужные формы
 
 // создает форму
 router.post('/api/form', async ctx => {
-  const body = JSON.parse(ctx.request.body);
-  const formBody = JSON.parse(ctx.request.body);
+  const body = JSON.parse(JSON.stringify(ctx.request.body));
+  const formBody = JSON.parse(JSON.stringify(ctx.request.body));
   delete formBody['professions'];
   delete formBody['languageSkills'];
   delete formBody['messengers'];
@@ -141,6 +115,26 @@ router.delete('/api/form/:formid', async ctx => {
   })
     .then(() => {
       ctx.body = { status: 'Form Deleted!' }
+    })
+    .catch(err => {
+      ctx.body = 'error: ' + err
+    })
+});
+
+// требует доработки
+// обновляет форму
+router.put('/api/form/:formid', async ctx => {
+  // const body = JSON.parse(ctx.request.body);
+  const formBody = JSON.parse(ctx.request.body);
+  delete formBody['professions'];
+  delete formBody['languageSkills'];
+  delete formBody['messengers'];
+    await Promise.all([
+      Form.update( formBody, 
+        { where: { formid: ctx.params.formid } })
+    ])
+    .then(() => {
+      ctx.body = { status: 'Form Updated!' }
     })
     .catch(err => {
       ctx.body = 'error: ' + err
