@@ -32,7 +32,7 @@ const Form = sequelize.define("form", {
         // },
     },
     born: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATEONLY,
         // allowNull: false,
         // validate: {
         //     notNull: { firstname: "birthdate is required" },

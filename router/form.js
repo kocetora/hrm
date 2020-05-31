@@ -125,10 +125,7 @@ router.delete('/api/form/:formid', async ctx => {
 // обновляет форму
 router.put('/api/form/:formid', async ctx => {
   // const body = JSON.parse(ctx.request.body);
-  const formBody = JSON.parse(ctx.request.body);
-  delete formBody['professions'];
-  delete formBody['languageSkills'];
-  delete formBody['messengers'];
+  const formBody = JSON.parse(JSON.stringify(ctx.request.body));
     await Promise.all([
       Form.update( formBody, 
         { where: { formid: ctx.params.formid } })
