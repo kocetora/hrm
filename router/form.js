@@ -5,13 +5,15 @@ const Form = require('../db/models/form');
 const Profession = require('../db/models/profession');
 const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
-
-// ищет нужные формы
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 // создает форму
 router.post('/api/form', async ctx => {
-  const body = JSON.parse(JSON.stringify(ctx.request.body));
-  const formBody = JSON.parse(JSON.stringify(ctx.request.body));
+  // const body = JSON.parse(JSON.stringify(ctx.request.body));
+  // const formBody = JSON.parse(JSON.stringify(ctx.request.body));
+  const body = JSON.parse(ctx.request.body);
+  const formBody = JSON.parse(ctx.request.body);
   delete formBody['professions'];
   delete formBody['languageSkills'];
   delete formBody['messengers'];
@@ -67,11 +69,34 @@ router.get('/api/forms', async ctx => {
     })
 });
 
-// получает форму по идетентефикаору
-router.get('/api/form/:formid', async ctx => {
-  await Form.findOne({
+
+// 
+// "professions":[{"profession":"pit_boss"},{"profession":"dealer"}],
+// фильтрует формы
+router.post('/api/form/filter', async ctx => {
+  // const body = JSON.parse(JSON.stringify(ctx.request.body));
+  // console.log(new Date().toISOString().split("T")[0]);
+  const body = JSON.parse(ctx.request.body)  
+  await Form.findAll({
     where: {
-      formid: ctx.params.formid
+      // sex: body.sex,
+      // height: {
+      //   [Op.gte]: body.height[0].from,
+      //   [Op.lte]: body.height[0].to
+      // },
+      born: {
+        [Op.gte]: new Date(new Date() - body.age[0].to*(24 * 3600 * 365.25 * 1000)),
+        [Op.lte]: new Date(new Date() - body.age[0].from*(24 * 3600 * 365.25 * 1000))
+      },
+      // workExperience: {
+      //   [Op.gte]: body.workExperience[0].from,
+      //   [Op.lte]: body.workExperience[0].to
+      // },
+      // expectedSalary: {
+      //   [Op.gte]: body.expectedSalary[0].from,
+      //   [Op.lte]: body.expectedSalary[0].to
+      // },
+      // education: body.education      
     },
     include: [
       {
@@ -121,10 +146,8 @@ router.delete('/api/form/:formid', async ctx => {
     })
 });
 
-// требует доработки
 // обновляет форму
 router.put('/api/form/:formid', async ctx => {
-  // const body = JSON.parse(ctx.request.body);
   const formBody = JSON.parse(JSON.stringify(ctx.request.body));
     await Promise.all([
       Form.update( formBody, 
