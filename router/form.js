@@ -10,10 +10,8 @@ const Op = Sequelize.Op;
 
 // создает форму
 router.post('/api/form', async ctx => {
-  // const body = JSON.parse(JSON.stringify(ctx.request.body));
-  // const formBody = JSON.parse(JSON.stringify(ctx.request.body));
-  const body = JSON.parse(ctx.request.body);
-  const formBody = JSON.parse(ctx.request.body);
+  const body = JSON.parse(JSON.stringify(ctx.request.body));
+  const formBody = JSON.parse(JSON.stringify(ctx.request.body));
   delete formBody['professions'];
   delete formBody['languageSkills'];
   delete formBody['messengers'];
@@ -68,67 +66,101 @@ router.get('/api/forms', async ctx => {
       ctx.body = 'error: ' + err
     })
 });
-
-
-// 
-// "professions":[{"profession":"pit_boss"},{"profession":"dealer"}],
+  
 // фильтрует формы
 router.post('/api/form/filter', async ctx => {
-  // const body = JSON.parse(JSON.stringify(ctx.request.body));
-  // console.log(new Date().toISOString().split("T")[0]);
-  const body = JSON.parse(ctx.request.body)  
+  const body = JSON.parse(JSON.stringify(ctx.request.body));
   await Form.findAll({
     where: {
-      // sex: body.sex,
-      // height: {
-      //   [Op.gte]: body.height[0].from,
-      //   [Op.lte]: body.height[0].to
-      // },
+      sex: body.sex,
+      height: {
+        [Op.gte]: body.height[0].from,
+        [Op.lte]: body.height[0].to
+      },
       born: {
         [Op.gte]: new Date(new Date() - body.age[0].to*(24 * 3600 * 365.25 * 1000)),
         [Op.lte]: new Date(new Date() - body.age[0].from*(24 * 3600 * 365.25 * 1000))
       },
-      // workExperience: {
-      //   [Op.gte]: body.workExperience[0].from,
-      //   [Op.lte]: body.workExperience[0].to
-      // },
-      // expectedSalary: {
-      //   [Op.gte]: body.expectedSalary[0].from,
-      //   [Op.lte]: body.expectedSalary[0].to
-      // },
-      // education: body.education      
+      workExperience: {
+        [Op.gte]: body.workExperience[0].from,
+        [Op.lte]: body.workExperience[0].to
+      },
+      expectedSalary: {
+        [Op.gte]: body.expectedSalary[0].from,
+        [Op.lte]: body.expectedSalary[0].to
+      },
+      education: body.education      
     },
     include: [
       {
         model: Profession,
+        where: {
+          profession: body.professions.map(element => {
+            return element.profession
+          })
+        },
         through: {
           attributes: []
         }
       },
       {
         model: Messenger,
+        where: {
+          messenger: body.messengers.map(element => {
+            return element.messenger
+          })
+        },
         through: {
           attributes: []
         }
       },
       {
         model: LanguageSkill,
+        where: {
+          language: body.languageSkills[0].language,
+          languageProficiency: body.languageSkills[0].languageProficiency=='any'?['native', 'fluent', 'intermediate', 'basic']:body.languageSkills[0].languageProficiency     
+        },
         through: {
           attributes: []
         }
       },
     ]
   })
-    .then(form => {
-      if (form) {
-        ctx.body = form
-      } else {
-        ctx.body = 'Form does not exist'
-      }
+  .then(async forms => {
+    await   await Form.findAll({
+      where: {
+        formid: forms.map(form => {
+                return form.formid
+              })
+      },
+      include: [
+        {
+          model: Profession,
+          through: {
+            attributes: []
+          }
+        },
+        {
+          model: Messenger,
+          through: {
+            attributes: []
+          }
+        },
+        {
+          model: LanguageSkill,
+          through: {
+            attributes: []
+          }
+        },
+      ]
     })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
+      .then(forms => {
+        ctx.body = forms
+      })
+      .catch(err => {
+        ctx.body = 'error: ' + err
+      })
+  })
 });
 
 // удаляет форму
