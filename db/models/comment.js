@@ -29,8 +29,6 @@ Comment.belongsTo(User, {
   as: 'user',
 });
 
-// https://bezkoder.com/sequelize-associate-one-to-many/
-
 // sequelize.sync({force:true}).then(()=>{
 //     console.log("Tables have been created");
 //   }).catch(err=>console.log(err));

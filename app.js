@@ -2,11 +2,7 @@
 const Koa = require('koa');
 const app = new Koa();
 const bodyParser = require('koa-bodyparser');
-const passport = require ('koa-passport');
-// const jwtSecret = require('./config/jwtConfig.js');
-//const uuid = require('uuid');
-// const tokenGenerator = require('uuid-token-generator');
-const jwt = require ('koa-jwt');
+const passport = require('koa-passport');
 const cors = require('@koa/cors');
 
 app.use(cors());
