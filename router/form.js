@@ -2,6 +2,8 @@
 const Router = require('koa-router');
 const router = new Router();
 const Form = require('../db/models/form');
+const User = require('../db/models/user');
+const Comment = require('../db/models/comment');
 const Profession = require('../db/models/profession');
 const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
@@ -10,8 +12,8 @@ const Op = Sequelize.Op;
 
 // создает форму
 router.post('/api/form', async ctx => {
-  const body = JSON.parse(JSON.stringify(ctx.request.body));
-  const formBody = JSON.parse(JSON.stringify(ctx.request.body));
+  const body = JSON.parse(ctx.request.body);
+  const formBody = JSON.parse(ctx.request.body);
   delete formBody['professions'];
   delete formBody['languageSkills'];
   delete formBody['messengers'];
@@ -188,6 +190,77 @@ router.put('/api/form/:formid', async ctx => {
     .then(() => {
       ctx.body = { status: 'Form Updated!' }
     })
+    .catch(err => {
+      ctx.body = 'error: ' + err
+    })
+});
+
+router.post('/api/comment/', async ctx => {
+  // const body = JSON.parse(JSON.stringify(ctx.request.body));
+  const body = JSON.parse(ctx.request.body);
+    await Promise.all([
+      Comment.create(body)
+    ])
+    .then((comment) => {
+      ctx.body = { status: 'Comment created!',
+                   comment: comment }
+    })
+    .catch(err => {
+      ctx.body = 'error: ' + err
+    })
+});
+
+router.get('/api/comment/:formid', async ctx => {
+    await Promise.all([
+      Comment.findAll({
+        where: {
+          formid: ctx.params.formid
+        }
+      })
+    ])
+    .then((comments) => {
+      ctx.body = comments
+    })
+    .catch(err => {
+      ctx.body = 'error: ' + err
+    })
+});
+
+router.post('/api/user/', async ctx => {
+  // const body = JSON.parse(JSON.stringify(ctx.request.body));
+  const body = JSON.parse(ctx.request.body);
+    await Promise.all([
+      User.create(body)
+    ])
+    .then(() => {
+      ctx.body = { status: 'User created!' }
+    })
+    .catch(err => {
+      ctx.body = 'error: ' + err
+    })
+});
+
+router.post('/api/users/', async ctx => {
+  // const body = JSON.parse(JSON.stringify(ctx.request.body));
+  const body = JSON.parse(ctx.request.body);
+  console.log(body)
+    await Promise.all([
+      User.findOne({
+        where:{
+          login: body.login
+        }
+      })
+    ])
+    .then(function (user) {
+        console.log(user[0])
+        if (!user[0]) {
+            console.log('skcn')
+        } else if (!user[0].validPassword(body.password)) {
+            console.log('cdns')
+        } else {
+            ctx.body = user;
+        }
+  })
     .catch(err => {
       ctx.body = 'error: ' + err
     })

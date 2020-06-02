@@ -102,38 +102,3 @@ const Form = sequelize.define("form", {
 
 module.exports = Form;
 
-// const User = sequelize.define('user', {
-//     userid: {
-//         type: Sequelize.INTEGER,
-//         autoIncrement: true,
-//         primaryKey: true,
-//         allowNull: false
-//     },
-//     login: {
-//         type: Sequelize.STRING
-//     },
-//     name: {
-//         type: Sequelize.STRING
-//     },
-//     password: {
-//         type: Sequelize.STRING
-//     }
-// }, { timestamps: false });
-
-// const Comment = sequelize.define('comment', {
-//     commentid: {
-//         type: Sequelize.INTEGER,
-//         autoIncrement: true,
-//         primaryKey: true,
-//         allowNull: false
-//     },
-//     comment: {
-//         type: Sequelize.TEXT
-//     }
-// }, { timestamps: false });
-
-// Form.hasMany(Comment);
-// User.hasMany(Comment);
-
-
-
