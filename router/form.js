@@ -10,6 +10,9 @@ const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const jwtSecret = require('../config/jwtConfig');
+const jwt = require('jsonwebtoken');
+const passport = require('koa-passport');
 
 // создает форму
 router.post('/api/form', async ctx => {
@@ -227,9 +230,10 @@ router.get('/api/comment/:formid', async ctx => {
     })
 });
 
-router.post('/api/user/', async ctx => {
+router.post('/user/', async ctx => {
   // const body = JSON.parse(JSON.stringify(ctx.request.body));
-  const body = JSON.parse(ctx.request.body);
+  const body = ctx.request.body;
+  
     await Promise.all([
       User.create(body)
     ])
@@ -241,30 +245,47 @@ router.post('/api/user/', async ctx => {
     })
 });
 
-router.post('/api/users/', async ctx => {
-  // const body = JSON.parse(JSON.stringify(ctx.request.body));
-  const body = JSON.parse(ctx.request.body);
-  console.log(body)
-    await Promise.all([
-      User.findOne({
-        where:{
-          login: body.login
-        }
-      })
-    ])
-    .then(function (user) {
-        console.log(user[0])
-        if (!user[0]) {
-            console.log('skcn')
-        } else if (!user[0].validPassword(body.password)) {
-            console.log('cdns')
-        } else {
-            ctx.body = user;
-        }
-  })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
+router.post('/login', async(ctx, next) => {
+  await passport.authenticate('local', function (err, user) {
+    if (user == false) {
+      ctx.body = "Login failed";
+    } else {
+      const payload = {
+        id: user.userid,
+        username: user.username,
+      };
+      const token = jwt.sign(payload, jwtSecret.secret); //здесь создается JWT
+      
+      ctx.body = {user: user.username, token: token};
+    }
+  })(ctx, next);  
 });
+
+
+// router.post('/api/users/', async ctx => {
+//   // const body = JSON.parse(JSON.stringify(ctx.request.body));
+//   const body = JSON.parse(ctx.request.body);
+//   console.log(body)
+//     await Promise.all([
+//       User.findOne({
+//         where:{
+//           login: body.login
+//         }
+//       })
+//     ])
+//     .then(function (user) {
+//         console.log(user[0])
+//         if (!user[0]) {
+//             console.log('skcn')
+//         } else if (!user[0].validPassword(body.password)) {
+//             console.log('cdns')
+//         } else {
+//             ctx.body = user;
+//         }
+//   })
+//     .catch(err => {
+//       ctx.body = 'error: ' + err
+//     })
+// });
 
 module.exports = router;
