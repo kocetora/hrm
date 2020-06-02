@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "lint": "eslint --fix app.js && eslint --fix db/*.js && eslint --fix db/models/*.js"
   },
   "keywords": [
     "hrm"
@@ -20,6 +21,8 @@
     "sequelize": "^5.21.9"
   },
   "devDependencies": {
+    "eslint": "^7.1.0",
     "nodemon": "^2.0.4"
-  }
+  },
+  "pre-commit": "lint"
 }

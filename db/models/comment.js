@@ -1,30 +1,32 @@
+'use strict';
+
 const Sequelize = require('sequelize');
 const sequelize = require('../db.js');
 const Form = require('./form');
 const User = require('./user');
 
 const Comment = sequelize.define('comment', {
-    commentid: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        primaryKey: true,
-        allowNull: false
-    },
-    comment: {
-        type: Sequelize.STRING
-    }
+  commentid: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+    allowNull: false
+  },
+  comment: {
+    type: Sequelize.STRING
+  }
 });
 
-Form.hasMany(Comment, { as: "comments" });
+Form.hasMany(Comment, { as: 'comments' });
 Comment.belongsTo(Form, {
-  foreignKey: "formid",
-  as: "form",
+  foreignKey: 'formid',
+  as: 'form',
 });
 
-User.hasMany(Comment, { as: "comments" });
+User.hasMany(Comment, { as: 'comments' });
 Comment.belongsTo(User, {
-  foreignKey: "userid",
-  as: "user",
+  foreignKey: 'userid',
+  as: 'user',
 });
 
 // https://bezkoder.com/sequelize-associate-one-to-many/

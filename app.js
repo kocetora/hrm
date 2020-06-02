@@ -1,13 +1,13 @@
 'use strict';
-  
-var Koa = require('koa');
-var app = new Koa();
+const Koa = require('koa');
+const app = new Koa();
 const bodyParser = require('koa-body');
 
-const tasks = require('./router/form');
+
+const forms = require('./router/form');
 
 app.use(bodyParser());
-app.use(tasks.routes());
+app.use(forms.routes());
 
 app.listen(3000, () => {
   console.log('Server running at port 3000');
