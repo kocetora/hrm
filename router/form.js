@@ -114,8 +114,9 @@ async ctx => {
 });
 
 // фильтрует формы
-router.post('/api/form/filter', passport.authenticate('jwt', {session:false}), 
+router.post('/api/forms/filter', passport.authenticate('jwt', {session:false}), 
 async ctx => {
+  console.log(ctx.request.body)
   const body = ctx.request.body;
   await Form.findAll({
     where: {
@@ -174,7 +175,7 @@ async ctx => {
     ]
   })
   .then(async forms => {
-    await   await Form.findAll({
+    await Form.findAll({
       where: {
         formid: forms.map(form => {
                 return form.formid
@@ -207,7 +208,7 @@ async ctx => {
       .catch(err => {
         ctx.body = 'error: ' + err
       })
-  })
+    })
 });
 
 // удаляет форму
@@ -234,12 +235,45 @@ async ctx => {
       Form.update( formBody, 
         { where: { formid: ctx.params.formid } })
     ])
-    .then(() => {
-      ctx.body = { status: 'Form Updated!' }
-    })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
+    .then(async forms => {
+      await Form.findAll({
+        where: {
+          formid: ctx.params.formid
+        },
+        include: [
+          {
+            model: Profession,
+            through: {
+              attributes: []
+            }
+          },
+          {
+            model: Messenger,
+            through: {
+              attributes: []
+            }
+          },
+          {
+            model: LanguageSkill,
+            through: {
+              attributes: []
+            }
+          },
+        ]
+      })
+        .then(form => {
+          ctx.body = form
+        })
+        .catch(err => {
+          ctx.body = 'error: ' + err
+        })
+      })
+    // .then((form) => {
+    //   ctx.body = form
+    // })
+    // .catch(err => {
+    //   ctx.body = 'error: ' + err
+    // })
 });
 
 router.post('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
