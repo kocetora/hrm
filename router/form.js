@@ -15,7 +15,7 @@ const jwt = require('jsonwebtoken');
 const passport = require('koa-passport');
 
 // создает форму
-router.post('/form', 
+router.post('/api/form', 
 async ctx => {
   const body = {...ctx.request.body};
   const formBody = {...ctx.request.body};
@@ -43,7 +43,7 @@ async ctx => {
 });
 
 // получает все формы 
-router.get('/forms', 
+router.get('/api/forms', 
 passport.authenticate('jwt', {session:false}), 
 async ctx => {
   await Form.findAll({
@@ -77,7 +77,7 @@ async ctx => {
 });
 
 // получает форму по индексу 
-router.get('/form/:formid', 
+router.get('/api/form/:formid', 
 passport.authenticate('jwt', {session:false}), 
 async ctx => {
   await Form.findOne({
@@ -114,7 +114,7 @@ async ctx => {
 });
 
 // фильтрует формы
-router.post('/form/filter', passport.authenticate('jwt', {session:false}), 
+router.post('/api/form/filter', passport.authenticate('jwt', {session:false}), 
 async ctx => {
   const body = ctx.request.body;
   await Form.findAll({
@@ -211,7 +211,7 @@ async ctx => {
 });
 
 // удаляет форму
-router.delete('/form/:formid', passport.authenticate('jwt', {session:false}), 
+router.delete('/api/form/:formid', passport.authenticate('jwt', {session:false}), 
 async ctx => {
   await Form.destroy({
     where: {
@@ -227,7 +227,7 @@ async ctx => {
 });
 
 // обновляет форму
-router.put('/form/:formid', passport.authenticate('jwt', {session:false}), 
+router.put('/api/form/:formid', passport.authenticate('jwt', {session:false}), 
 async ctx => {
   const formBody = {...ctx.request.body};
     await Promise.all([
@@ -242,7 +242,7 @@ async ctx => {
     })
 });
 
-router.post('/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
+router.post('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
 async ctx => {
   const body = {...ctx.request.body};
     await Promise.all([
@@ -261,7 +261,7 @@ async ctx => {
     })
 });
 
-router.get('/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
+router.get('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
 async ctx => {
     await Promise.all([
       Comment.findAll({
@@ -278,7 +278,7 @@ async ctx => {
     })
 });
 
-router.post('/register', async ctx => {
+router.post('/api/register', async ctx => {
   const body = ctx.request.body;
     await Promise.all([
       User.create(body)
@@ -291,11 +291,12 @@ router.post('/register', async ctx => {
     })
 });
 
-router.post('/login', async(ctx, next) => {
+router.post('/api/login', async(ctx) => {
   await passport.authenticate('local', function (err, user, info) {
     if (user == false) {
       ctx.body = info.message;
     } else {
+      ctx.login(user);
       const payload = {
         userid: user.userid,
         username: user.username,
@@ -304,7 +305,16 @@ router.post('/login', async(ctx, next) => {
       
       ctx.body = {user: user.username, token: token};
     }
-  })(ctx, next);  
+  })(ctx);  
 });
+
+router.get('/api/logout', async (ctx) => {
+  try {
+      ctx.logout();
+      ctx.body = {status:'User logged out'};
+  } catch (error) {
+      ctx.status = 400;
+  }
+})
 
 module.exports = router;

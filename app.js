@@ -15,6 +15,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 require('./config/jwtStrategy')(passport);
 app.use(forms.routes());
+app.use(forms.allowedMethods());
 
 app.listen(3000, () => {
   console.log('Server running at port 3000');
