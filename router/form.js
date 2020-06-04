@@ -268,12 +268,6 @@ async ctx => {
           ctx.body = 'error: ' + err
         })
       })
-    // .then((form) => {
-    //   ctx.body = form
-    // })
-    // .catch(err => {
-    //   ctx.body = 'error: ' + err
-    // })
 });
 
 router.post('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 

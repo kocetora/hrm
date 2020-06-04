@@ -8,7 +8,6 @@ const Profession = sequelize.define('profession', {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    allowNull: false
   },
   profession: {
     type: Sequelize.ENUM,
@@ -28,9 +27,9 @@ const FormProfession = sequelize.define('form_profession', {},
 Form.belongsToMany(Profession, { through: FormProfession });
 Profession.belongsToMany(Form, { through: FormProfession });
 
-// sequelize.sync({force:true}).then(()=>{
-//     console.log("Tables have been created");
-//   }).catch(err=>console.log(err));
+// sequelize.sync({ force: true }).then(() => {
+//   console.log('Tables have been created');
+// }).catch(err => console.log(err));
 
 module.exports = Profession;
 

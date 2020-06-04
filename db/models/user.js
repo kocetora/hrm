@@ -8,15 +8,26 @@ const User = sequelize.define('users', {
   userid: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
-    primaryKey: true
+    primaryKey: true,
+    allowNull: false,
+    validate: {
+      notNull: { userid: 'userid is required' },
+    },
   },
   username: {
     type: Sequelize.STRING,
-    unique: true
+    unique: true,
+    allowNull: false,
+    validate: {
+      notNull: { username: 'username is required' },
+    },
   },
   password: {
     type: Sequelize.STRING,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notNull: { password: 'password is required' },
+    },
   }
 }
 );
@@ -50,8 +61,8 @@ User.prototype.validPassword = function(password) {
 
 // https://gist.github.com/JesusMurF/9d206738aa54131a6e7ac88ab2d9084e
 
-// sequelize.sync({force:true}).then(()=>{
-//     console.log("Tables have been created");
-//   }).catch(err=>console.log(err));
+// sequelize.sync({ force: true }).then(() => {
+//   console.log('Tables have been created');
+// }).catch(err => console.log(err));
 
 module.exports = User;
