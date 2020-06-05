@@ -54,18 +54,12 @@ describe('GET FORMS', () => {
                 userid: 6561
             }
         })
-
-        Form.destroy({
-            where:{
-                formid:6561
-            }
-        })
         done();
     })
 
-    it('GET FORMS 200', done => {
+    it('DELETE FORM 200', done => {
         chai.request('http://localhost:3000')
-        .get('/api/forms/')
+        .delete('/api/form/6561')
         .set({ "Authorization": `Bearer ${testToken}` })
         .send({})
         .end((error, res) => {

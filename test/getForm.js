@@ -10,8 +10,7 @@ const Form = require('../db/models/form');
 
 chai.use(chaiHttp)
 
-
-describe('GET FORMS', () => {
+describe('GET FORM BY ID', () => {
     let testToken = '';
 
     before(async () => {
@@ -63,13 +62,24 @@ describe('GET FORMS', () => {
         done();
     })
 
-    it('GET FORMS 200', done => {
+    it('GET FORM 200 BY ID', done => {
         chai.request('http://localhost:3000')
-        .get('/api/forms/')
+        .get('/api/form/6561')
         .set({ "Authorization": `Bearer ${testToken}` })
         .send({})
         .end((error, res) => {
             expect(res).to.have.status(200);
+            done();
+        })
+    })
+
+    it('GET FORM 204 BY ID', done => {
+        chai.request('http://localhost:3000')
+        .get('/api/form/843252')
+        .set({ "Authorization": `Bearer ${testToken}` })
+        .send({})
+        .end((error, res) => {
+            expect(res).to.have.status(204);
             done();
         })
     })

@@ -11,23 +11,23 @@ const Form = require('../db/models/form');
 chai.use(chaiHttp)
 
 
-describe('GET FORMS', () => {
+describe('FILTER FORMS', () => {
     let testToken = '';
 
-    before(async () => {
+    beforeEach(async () => {
         const testUser = await User.create({
-            username:'6561',
-            password:'6561',
-            userid: 6561    
+            username:'83930',
+            password:'83930',
+            userid: 83930    
         });
 
         testToken = await jwt.sign({
-            userid: 6561,
-            username: '6561'
+            userid: 83930,
+            username: '83930'
           }, jwtSecret.secret)
 
         const testForm = await Form.create({
-            formid: 6561,
+            formid: 83930,
             name: "mvlsd",
             surname: "ldslv",
             sex: "female",
@@ -48,29 +48,50 @@ describe('GET FORMS', () => {
         })
     })
 
-    after(done => {
+    afterEach(done => {
         User.destroy({
             where:{
-                userid: 6561
+                username: "83930"
             }
         })
 
         Form.destroy({
             where:{
-                formid:6561
+                formid:83930
             }
         })
         done();
     })
 
-    it('GET FORMS 200', done => {
-        chai.request('http://localhost:3000')
-        .get('/api/forms/')
+    it('FILTER FORMS REQUEST 200', done => {
+        chai.request('http://localhost:5000')
+        .put('/api/forms/filter')
         .set({ "Authorization": `Bearer ${testToken}` })
-        .send({})
+        .send({
+                sex: "male",
+                education: "higher",
+                age: [{from: "knv",to: "dfkv"}],
+                workExperience: [{from: 0,to: 1211}],
+                height: [{from: 30,to: 300}],
+                expectedSalary: [{from: 1,to: 100000}],
+                languageSkills: [{language: "russian", languageProficiency: "basic"}],
+                professions: [
+                    {profession: "trainee"},
+                    {profession: "dealer"},
+                    {profession: "inspector"},
+                    {profession: "manager"},
+                    {profession: "pit_boss"},
+                    {profession: "waiter"},
+                    {profession: "barman"}],
+                messengers: [
+                    {messenger: "Telegram"},
+                    {messenger: "Viber"},
+                    {messenger: "WhatsApp"}]
+        })
         .end((error, res) => {
-            expect(res).to.have.status(200);
+            expect(res).to.have.status(200)
             done();
         })
     })
 })
+

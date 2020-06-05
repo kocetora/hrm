@@ -116,7 +116,7 @@ async ctx => {
     ]
   })
     .then(forms => {
-        ctx.body = forms //204
+        ctx.body = forms 
     })
     .catch(err => {
       ctx.status = err.status || 500;
@@ -221,7 +221,7 @@ async ctx => {
       })
     }).catch(err => {
       ctx.status = 404;
-    ctx.body = {
+      ctx.body = {
       success: false,
       message: err.message
     }
@@ -287,14 +287,15 @@ async ctx => {
         })
     }).catch(err => {
       console.log(err)
-      // ctx.status = 400;
-      // ctx.body =  {
-      //   success: false,
-      //   message: err.message
-      // }  
+      ctx.status = 400;
+      ctx.body =  {
+        success: false,
+        message: err.message
+      }  
   })
 });
 
+// создает комментарий
 router.post('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
 async ctx => {
   const body = {...ctx.request.body};
@@ -311,13 +312,14 @@ async ctx => {
     })
     .catch(err => {
       ctx.status = 400;
-      // ctx.body = {
-      //   success: false,
-      //   message: err.parent.detail || err.message
-      // }
+      ctx.body = {
+        success: false,
+        message: err.parent.detail || err.message
+      }
   })
 });
 
+//получает комментарии
 router.get('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
 async ctx => {
     await Promise.all([
@@ -337,16 +339,15 @@ async ctx => {
       ctx.body = comments[0]
     })
     .catch(err => {
-      // ctx.status = err.status || 500;
-      // ctx.body = {
-      //   success: false,
-      //   message: err.message
-      // }
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err.message
+      }
     })
 });
 
-
-
+//регистрация нового пользователя
 router.post('/api/register', async ctx => {
   const body = ctx.request.body;
     await Promise.all([
@@ -356,14 +357,15 @@ router.post('/api/register', async ctx => {
       ctx.body = { status: 'User created!' }
     })
     .catch(err => {
-      // ctx.status = 400;
-      // ctx.body = {
-      //   success: false,
-      //   message: err.parent.detail
-      // }
+      ctx.status = 400;
+      ctx.body = {
+        success: false,
+        message: err.parent.detail
+      }
     })
 });
 
+//вход в систему
 router.post('/api/login', async(ctx) => {
   await passport.authenticate('local', function (err, user, info) {
     if (user == false) {
@@ -389,16 +391,17 @@ router.post('/api/login', async(ctx) => {
   })(ctx);  
 });
 
+//выход из системы
 router.get('/api/logout', async (ctx) => {
   try {
       ctx.logout();
       ctx.body = {status:'User logged out'};
   } catch (err) {
-      // ctx.status = 400;
-      // ctx.body = {
-      //   success: false,
-      //   message: 'Bad request'
-      // }
+      ctx.status = 400;
+      ctx.body = {
+        success: false,
+        message: 'Bad request'
+      }
   }
 })
 

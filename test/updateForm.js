@@ -16,18 +16,18 @@ describe('UPDATE FORM', () => {
 
     beforeEach(async () => {
         const testUser = await User.create({
-            username:'198325',
-            password:'198325',
-            userid: 198325    
+            username:'94385',
+            password:'94385',
+            userid: 94385    
         });
 
         testToken = await jwt.sign({
-            userid: 198325,
-            username: '198325'
+            userid: 94385,
+            username: '94385'
           }, jwtSecret.secret)
 
         const testForm = await Form.create({
-            formid: 198325,
+            formid: 94385,
             name: "mvlsd",
             surname: "ldslv",
             sex: "female",
@@ -51,13 +51,13 @@ describe('UPDATE FORM', () => {
     afterEach(done => {
         User.destroy({
             where:{
-                username: "198325"
+                username: "94385"
             }
         })
 
         Form.destroy({
             where:{
-                formid:198325
+                formid:94385
             }
         })
         done();
@@ -65,7 +65,7 @@ describe('UPDATE FORM', () => {
 
     it('UPDATE FORM 200', done => {
         chai.request('http://localhost:3000')
-        .put('/api/form/198325')
+        .put('/api/form/94385')
         .set({ "Authorization": `Bearer ${testToken}` })
         .send({
             name: "mvlsd",
@@ -94,14 +94,14 @@ describe('UPDATE FORM', () => {
 
     it('UPDATE FORM BAD REQUEST 400', done => {
         chai.request('http://localhost:5000')
-        .put('/api/form/198325')
+        .put('/api/form/94385')
         .set({ "Authorization": `Bearer ${testToken}` })
         .send({
             name: "mvlsd",
             surname: "ldslv",
             sex: "female",
             born: "2001-05-05",
-            height: "sdvj",
+            height: "j30",
             phoneNumber: "23438",
             email: "kldslv@nvd.com",
             education: "primary",
