@@ -18,10 +18,9 @@ module.exports = passport => {
       User.findOne({
         where: { username }
       }).then(user => {
-        if (!user) {
-          return done(null, false, { message: 'User does not exist' });
-        } else if (!user.validPassword(password)) {
-          return done(null, false, { message: 'Incorrect password' });
+        if (!user || !user.validPassword(password)) {
+          return done(null, false,
+            { message: 'User does not exist or password is incorrect' });
         } else {
           return done(null, user);
         }
@@ -56,7 +55,7 @@ passport.use('jwt', new JWTstrategy(opt, (payload, done) => {
     if (user) {
       done(null, user);
     } else {
-      done(null, false);
+      done(null, false, { message: 'Unauthorized' });
     }
   });
 }));

@@ -38,7 +38,13 @@ async ctx => {
         ctx.body = data;
       })
       .catch(err => {
-        ctx.body = 'error: ' + err
+        ctx.status = 400;
+      ctx.body = {
+        success: false,
+        message: err.errors ? err.errors.map(el => {
+          return el.message;
+        }) : err.message
+      }
       })
 });
 
@@ -72,7 +78,11 @@ async ctx => {
       ctx.body = forms
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err.message
+      }
     })
 });
 
@@ -106,10 +116,14 @@ async ctx => {
     ]
   })
     .then(forms => {
-      ctx.body = forms
+        ctx.body = forms //204
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err
+      }
     })
 });
 
@@ -205,9 +219,12 @@ async ctx => {
       .then(forms => {
         ctx.body = forms
       })
-      .catch(err => {
-        ctx.body = 'error: ' + err
-      })
+    }).catch(err => {
+      ctx.status = 404;
+    ctx.body = {
+      success: false,
+      message: err.message
+    }
     })
 });
 
@@ -223,7 +240,11 @@ async ctx => {
       ctx.body = { status: 'Form Deleted!' }
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = 404;
+      ctx.body = {
+        success: false,
+        message: err.message
+      }
     })
 });
 
@@ -264,10 +285,14 @@ async ctx => {
         .then(form => {
           ctx.body = form
         })
-        .catch(err => {
-          ctx.body = 'error: ' + err
-        })
-      })
+    }).catch(err => {
+      console.log(err)
+      ctx.status = 400;
+      ctx.body =  {
+        success: false,
+        message: err.message
+      }  
+  })
 });
 
 router.post('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
@@ -281,30 +306,46 @@ async ctx => {
       })
     ])
     .then((comment) => {
-      ctx.body = { status: 'Comment created!',
-                   comment: comment }
+      ctx.body = { success: true,
+                   message: comment }
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
-    })
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err.parent.detail || err.message
+      }
+  })
 });
 
 router.get('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
 async ctx => {
     await Promise.all([
       Comment.findAll({
+        attributes: ['comment', 'createdAt', 'userid'],
         where: {
           formid: ctx.params.formid
+        },
+        include: {
+          model: User,
+          as: 'user',
+          attributes: ['username']
         }
       })
     ])
     .then((comments) => {
-      ctx.body = comments
+      ctx.body = comments[0]
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err.message
+      }
     })
 });
+
+
 
 router.post('/api/register', async ctx => {
   const body = ctx.request.body;
@@ -315,14 +356,22 @@ router.post('/api/register', async ctx => {
       ctx.body = { status: 'User created!' }
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err.parent.detail
+      }
     })
 });
 
 router.post('/api/login', async(ctx) => {
   await passport.authenticate('local', function (err, user, info) {
     if (user == false) {
-      ctx.body = info.message;
+      ctx.status = 401;
+      ctx.body = {
+        success: false,
+        message: info.message
+      }
     } else {
       ctx.login(user);
       const payload = {
@@ -331,7 +380,11 @@ router.post('/api/login', async(ctx) => {
       };
       const token = jwt.sign(payload, jwtSecret.secret);
       
-      ctx.body = {user: user.username, token: token};
+      ctx.body = {
+        userid: user.userid, 
+        username: user.username, 
+        token: token
+      };
     }
   })(ctx);  
 });
@@ -340,8 +393,12 @@ router.get('/api/logout', async (ctx) => {
   try {
       ctx.logout();
       ctx.body = {status:'User logged out'};
-  } catch (error) {
+  } catch (err) {
       ctx.status = 400;
+      ctx.body = {
+        success: false,
+        message: 'Bad request'
+      }
   }
 })
 

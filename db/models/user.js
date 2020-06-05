@@ -59,8 +59,6 @@ User.prototype.validPassword = function(password) {
   return bcrypt.compareSync(password, this.dataValues.password);
 };
 
-// https://gist.github.com/JesusMurF/9d206738aa54131a6e7ac88ab2d9084e
-
 // sequelize.sync({ force: true }).then(() => {
 //   console.log('Tables have been created');
 // }).catch(err => console.log(err));
