@@ -41,7 +41,6 @@ User.beforeCreate(user => cryptPassword(user.password)
   }));
 
 function cryptPassword(password) {
-  console.log('cryptPassword' + password);
   return new Promise(((resolve, reject) => {
     bcrypt.genSalt(10, (err, salt) => {
       // Encrypt password using bycrpt module

@@ -287,11 +287,11 @@ async ctx => {
         })
     }).catch(err => {
       console.log(err)
-      ctx.status = 400;
-      ctx.body =  {
-        success: false,
-        message: err.message
-      }  
+      // ctx.status = 400;
+      // ctx.body =  {
+      //   success: false,
+      //   message: err.message
+      // }  
   })
 });
 
@@ -310,11 +310,11 @@ async ctx => {
                    message: comment }
     })
     .catch(err => {
-      ctx.status = err.status || 500;
-      ctx.body = {
-        success: false,
-        message: err.parent.detail || err.message
-      }
+      ctx.status = 400;
+      // ctx.body = {
+      //   success: false,
+      //   message: err.parent.detail || err.message
+      // }
   })
 });
 
@@ -337,11 +337,11 @@ async ctx => {
       ctx.body = comments[0]
     })
     .catch(err => {
-      ctx.status = err.status || 500;
-      ctx.body = {
-        success: false,
-        message: err.message
-      }
+      // ctx.status = err.status || 500;
+      // ctx.body = {
+      //   success: false,
+      //   message: err.message
+      // }
     })
 });
 
@@ -356,11 +356,11 @@ router.post('/api/register', async ctx => {
       ctx.body = { status: 'User created!' }
     })
     .catch(err => {
-      ctx.status = err.status || 500;
-      ctx.body = {
-        success: false,
-        message: err.parent.detail
-      }
+      // ctx.status = 400;
+      // ctx.body = {
+      //   success: false,
+      //   message: err.parent.detail
+      // }
     })
 });
 
@@ -394,11 +394,11 @@ router.get('/api/logout', async (ctx) => {
       ctx.logout();
       ctx.body = {status:'User logged out'};
   } catch (err) {
-      ctx.status = 400;
-      ctx.body = {
-        success: false,
-        message: 'Bad request'
-      }
+      // ctx.status = 400;
+      // ctx.body = {
+      //   success: false,
+      //   message: 'Bad request'
+      // }
   }
 })
 
