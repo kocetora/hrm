@@ -14,38 +14,6 @@ const jwtSecret = require('../config/jwtConfig');
 const jwt = require('jsonwebtoken');
 const passport = require('koa-passport');
 
-// создает форму
-router.post('/api/form',
-  async ctx => {
-    const body = { ...ctx.request.body };
-    const formBody = { ...ctx.request.body };
-    delete formBody['professions'];
-    delete formBody['languageSkills'];
-    delete formBody['messengers'];
-    await Promise.all([
-      Form.create(formBody),
-      Profession.bulkCreate(body['professions']),
-      LanguageSkill.bulkCreate(body['languageSkills']),
-      Messenger.bulkCreate(body['messengers'])
-    ])
-      .then(([form, professions, languageSkills, messengers]) => {
-        form.addProfessions(professions);
-        form.addMessengers(messengers);
-        form.addLanguageSkills(languageSkills);
-        return [form, professions, languageSkills, messengers];
-      })
-      .then(data => {
-        ctx.body = data;
-      })
-      .catch(err => {
-        ctx.status = 400;
-        ctx.body = {
-          success: false,
-          message: err.errors ? err.errors.map(el => el.message) : err.message
-        };
-      });
-  });
-
 // получает все формы
 router.get('/api/forms',
   passport.authenticate('jwt', { session: false }),
@@ -338,63 +306,5 @@ router.get('/api/form/:formid/comment', passport.authenticate('jwt', { session: 
         };
       });
   });
-
-//регистрация нового пользователя
-router.post('/api/register', async ctx => {
-  const body = ctx.request.body;
-  await Promise.all([
-    User.create(body)
-  ])
-    .then(() => {
-      ctx.body = { status: 'User created!' };
-    })
-    .catch(err => {
-      ctx.status = 400;
-      ctx.body = {
-        success: false,
-        message: err.parent.detail
-      };
-    });
-});
-
-//вход в систему
-router.post('/api/login', async ctx => {
-  await passport.authenticate('local', (err, user, info) => {
-    if (user == false) {
-      ctx.status = 401;
-      ctx.body = {
-        success: false,
-        message: info.message
-      };
-    } else {
-      ctx.login(user);
-      const payload = {
-        userid: user.userid,
-        username: user.username,
-      };
-      const token = jwt.sign(payload, jwtSecret.secret);
-
-      ctx.body = {
-        userid: user.userid,
-        username: user.username,
-        token
-      };
-    }
-  })(ctx);
-});
-
-//выход из системы
-router.get('/api/logout', async ctx => {
-  try {
-    ctx.logout();
-    ctx.body = { status: 'User logged out' };
-  } catch (err) {
-    ctx.status = 400;
-    ctx.body = {
-      success: false,
-      message: 'Bad request'
-    };
-  }
-});
 
 module.exports = router;

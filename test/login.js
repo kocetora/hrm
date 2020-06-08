@@ -11,9 +11,9 @@ chai.use(chaiMatchPattern);
 describe('LOGIN', () => {
   beforeEach(done => {
     User.create({
-      userid: 1948560,
-      username: '1948560',
-      password: '1948560'
+      userid: 273498,
+      username: '273498',
+      password: '273498'
     });
     done();
   });
@@ -21,7 +21,7 @@ describe('LOGIN', () => {
   afterEach(done => {
     User.destroy({
       where: {
-        username: '1948560'
+        username: '273498'
       }
     });
     done();
@@ -33,14 +33,14 @@ describe('LOGIN', () => {
       .type('form')
       .set('content-type', 'application/json')
       .send({
-        username: '1948560',
-        password: '1948560'
+        username: '273498',
+        password: '273498'
       })
       .end((error, res) => {
         expect(res.statusCode).to.equal(200);
         expect(res.body).to.matchPattern({
-          userid: 1948560,
-          username: '1948560',
+          userid: 273498,
+          username: '273498',
           token: _.isString });
         done();
       });
@@ -53,7 +53,7 @@ describe('LOGIN', () => {
       .set('content-type', 'application/json')
       .send({
         username: 'FALSE',
-        password: '1948560'
+        password: '273498'
       })
       .end((error, res) => {
         expect(res.statusCode).to.equal(401);
@@ -70,7 +70,7 @@ describe('LOGIN', () => {
       .type('form')
       .set('content-type', 'application/json')
       .send({
-        username: '1948560',
+        username: '273498',
         password: 'FALSE'
       })
       .end((error, res) => {
