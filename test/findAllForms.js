@@ -70,7 +70,6 @@ describe('GET FORMS', () => {
         .type('form')
         .set('content-type', 'application/json')
         .end((error, res) => {
-            console.log(res.body);
             expect(res).to.have.status(200);
             done();
         })

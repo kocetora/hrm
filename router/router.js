@@ -14,6 +14,6 @@ module.exports = new Router()
   .post('/register', register())
   .get('/logout', logout())
 
-  // .post('/form', createForm())
+  .post('/form', createForm())
   // .put('/form/:formid', passport.authenticate('jwt', { session: false }), updateForm())
   .get('/forms/', passport.authenticate('jwt', { session: false }), findAllForms())

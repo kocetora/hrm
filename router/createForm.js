@@ -21,6 +21,7 @@ const createForm = () =>
         return [form, professions, languageSkills, messengers];
       })
       .then(() => {
+        ctx.status = 200;
         ctx.body = {
           success: true,
           message: 'Form added!'
