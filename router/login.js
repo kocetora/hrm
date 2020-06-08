@@ -20,6 +20,7 @@ const login = () => async (ctx, next) => {
         username: user.username,
       };
       const token = jwt.sign(payload, jwtSecret.secret);
+      ctx.status = 200;
       ctx.body = {
         userid: user.userid,
         username: user.username,

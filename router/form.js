@@ -14,44 +14,6 @@ const jwtSecret = require('../config/jwtConfig');
 const jwt = require('jsonwebtoken');
 const passport = require('koa-passport');
 
-// получает все формы
-router.get('/api/forms',
-  passport.authenticate('jwt', { session: false }),
-  async ctx => {
-    await Form.findAll({
-      include: [
-        {
-          model: Profession,
-          through: {
-            attributes: []
-          }
-        },
-        {
-          model: Messenger,
-          through: {
-            attributes: []
-          }
-        },
-        {
-          model: LanguageSkill,
-          through: {
-            attributes: []
-          }
-        },
-      ]
-    })
-      .then(forms => {
-        ctx.body = forms;
-      })
-      .catch(err => {
-        ctx.status = err.status || 500;
-        ctx.body = {
-          success: false,
-          message: err.message
-        };
-      });
-  });
-
 // получает форму по индексу
 router.get('/api/form/:formid',
   passport.authenticate('jwt', { session: false }),
