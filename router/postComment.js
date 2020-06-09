@@ -13,14 +13,16 @@ const postComment = () =>
       })
     ])
       .then(comment => {
-        ctx.body = { success: true,
+        ctx.status = 200;
+        ctx.body = {
+          success: true,
           message: comment };
       })
       .catch(err => {
         ctx.status = 400;
         ctx.body = {
           success: false,
-          message: err.parent.detail || err.message
+          message: err.message
         };
       });
   };

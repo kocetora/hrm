@@ -1,7 +1,7 @@
 'use strict';
 
 const Router = require('koa-router');
-// const login = require('./login');
+const login = require('./login');
 const logout = require('./logout');
 const register = require('./register');
 const createForm = require('./createForm');
@@ -15,21 +15,26 @@ const getComment = require('./getComment');
 const passport = require('koa-passport');
 
 module.exports = new Router()
-  // .post('/login', login())
+  .post('/login', login())
   .post('/register', register())
   .get('/logout', logout())
 
   .post('/form', createForm())
-  .put('/form/:formid', passport.authenticate('jwt', { session: false }),
+  .put('/form/:formid',
+    passport.authenticate('jwt', { session: false }),
     updateForm())
-  .get('/form/:formid', passport.authenticate('jwt', { session: false }),
+  .get('/form/:formid',
+    passport.authenticate('jwt', { session: false }),
     findOneForm())
-  .delete('/form/:formid', passport.authenticate('jwt', { session: false }),
+  .delete('/form/:formid',
+    passport.authenticate('jwt', { session: false }),
     deleteForm())
 
-  .get('/forms', passport.authenticate('jwt', { session: false }),
+  .get('/forms',
+    passport.authenticate('jwt', { session: false }),
     findAllForms())
-  .post('/forms', passport.authenticate('jwt', { session: false }),
+  .post('/forms',
+    passport.authenticate('jwt', { session: false }),
     filterForms())
 
   .post('/form/:formid/comment',
