@@ -12,7 +12,7 @@ const updateForm = () =>
       Form.update(body,
         { where: { formid: ctx.params.formid } })
     ])
-      .then(async forms => {
+      .then(async () => {
         await Form.findAll({
           where: {
             formid: ctx.params.formid
@@ -39,11 +39,10 @@ const updateForm = () =>
           ]
         })
           .then(form => {
-              console.log(form);
+            ctx.status = 200;
             ctx.body = form;
           });
       }).catch(err => {
-        console.log(err);
         ctx.status = 400;
         ctx.body =  {
           success: false,
@@ -52,4 +51,4 @@ const updateForm = () =>
       });
   };
 
-module.exports = updateForm; 
+module.exports = updateForm;

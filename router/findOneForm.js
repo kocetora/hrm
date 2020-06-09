@@ -5,9 +5,12 @@ const Profession = require('../db/models/profession');
 const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
-const findAllForms = () =>
+const findOneForm = () =>
   async ctx => {
-    await Form.findAll({
+    await Form.findOne({
+      where: {
+        formid: ctx.params.formid
+      },
       include: [
         {
           model: Profession,
@@ -30,15 +33,16 @@ const findAllForms = () =>
       ]
     })
       .then(forms => {
+        ctx.status = 200;
         ctx.body = forms;
       })
       .catch(err => {
         ctx.status = err.status || 500;
         ctx.body = {
           success: false,
-          message: err.message
+          message: err
         };
       });
   };
 
-module.exports = findAllForms;
+module.exports = findOneForm;
