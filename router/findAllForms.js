@@ -6,7 +6,7 @@ const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
 const findAllForms = () =>
-  async ctx => {
+  async (ctx, next) => {
     await Form.findAll({
       include: [
         {
@@ -31,6 +31,7 @@ const findAllForms = () =>
     })
       .then(forms => {
         ctx.body = forms;
+        return next();
       })
       .catch(err => {
         ctx.status = err.status || 500;
@@ -38,6 +39,7 @@ const findAllForms = () =>
           success: false,
           message: err.message
         };
+        return next();
       });
   };
 

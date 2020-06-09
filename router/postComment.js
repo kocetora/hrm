@@ -3,7 +3,7 @@
 const Comment = require('../db/models/comment');
 
 const postComment = () =>
-  async ctx => {
+  async (ctx, next) => {
     const body = { ...ctx.request.body };
     await Promise.all([
       Comment.create({
@@ -16,7 +16,9 @@ const postComment = () =>
         ctx.status = 200;
         ctx.body = {
           success: true,
-          message: comment };
+          message: comment
+        };
+        return next();
       })
       .catch(err => {
         ctx.status = 400;
@@ -24,6 +26,7 @@ const postComment = () =>
           success: false,
           message: err.message
         };
+        return next();
       });
   };
 

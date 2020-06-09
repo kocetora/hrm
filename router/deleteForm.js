@@ -3,7 +3,7 @@
 const Form = require('../db/models/form');
 
 const deleteForm = () =>
-  async ctx => {
+  async (ctx, next) => {
     await Form.destroy({
       where: {
         formid: ctx.params.formid
@@ -15,6 +15,7 @@ const deleteForm = () =>
           status: true,
           message: 'Form Deleted!'
         };
+        return next();
       })
       .catch(err => {
         ctx.status = 404;
@@ -22,6 +23,7 @@ const deleteForm = () =>
           success: false,
           message: err.message
         };
+        return next();
       });
   };
 

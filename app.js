@@ -8,16 +8,12 @@ const PORT = 3000;
 const app = new Koa();
 app.use(cors());
 
-// const forms = require('./router/form');
 const router = require('./router/router');
 
 app.use(bodyParser());
-// app.use(forms.allowedMethods());
 app.use(passport.initialize());
 app.use(passport.session());
 require('./config/jwtStrategy')(passport);
-// app.use(forms.routes());
-// app.use(forms.allowedMethods());
 app.use(router.routes());
 app.use(router.allowedMethods());
 

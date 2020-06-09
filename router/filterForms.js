@@ -8,7 +8,7 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 const filterForms = () =>
-  async ctx => {
+  async (ctx, next) => {
     const body = ctx.request.body;
     await Form.findAll({
       where: {
@@ -98,6 +98,7 @@ const filterForms = () =>
           .then(forms => {
             ctx.status = 200;
             ctx.body = forms;
+            return next();
           });
       }).catch(err => {
         ctx.status = 400;
@@ -105,6 +106,7 @@ const filterForms = () =>
           success: false,
           message: err.message
         };
+        return next();
       });
   };
 

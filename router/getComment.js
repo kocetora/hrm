@@ -4,7 +4,7 @@ const User = require('../db/models/user');
 const Comment = require('../db/models/comment');
 
 const getComment = () =>
-  async ctx => {
+  async (ctx, next) => {
     await Promise.all([
       Comment.findAll({
         attributes: ['comment', 'createdAt', 'userid'],
@@ -21,6 +21,7 @@ const getComment = () =>
       .then(comments => {
         ctx.status = 200;
         ctx.body = comments[0];
+        return next();
       })
       .catch(err => {
         ctx.status = err.status || 500;
@@ -28,6 +29,7 @@ const getComment = () =>
           success: false,
           message: err.message
         };
+        return next();
       });
   };
 

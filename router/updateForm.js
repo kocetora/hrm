@@ -6,7 +6,7 @@ const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
 const updateForm = () =>
-  async ctx => {
+  async (ctx, next) => {
     const body = { ...ctx.request.body };
     await Promise.all([
       Form.update(body,
@@ -41,6 +41,7 @@ const updateForm = () =>
           .then(form => {
             ctx.status = 200;
             ctx.body = form;
+            return next();
           });
       }).catch(err => {
         ctx.status = 400;
@@ -48,6 +49,7 @@ const updateForm = () =>
           success: false,
           message: err.message
         };
+        return next();
       });
   };
 

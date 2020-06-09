@@ -6,7 +6,7 @@ const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
 const findOneForm = () =>
-  async ctx => {
+  async (ctx, next) => {
     await Form.findOne({
       where: {
         formid: ctx.params.formid
@@ -35,6 +35,7 @@ const findOneForm = () =>
       .then(forms => {
         ctx.status = 200;
         ctx.body = forms;
+        return next();
       })
       .catch(err => {
         ctx.status = err.status || 500;
@@ -42,6 +43,7 @@ const findOneForm = () =>
           success: false,
           message: err
         };
+        return next();
       });
   };
 

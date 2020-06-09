@@ -6,7 +6,7 @@ const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 
 const createForm = () =>
-  async ctx => {
+  async (ctx, next) => {
     const body = { ...ctx.request.body };
     await Promise.all([
       Form.create(body),
@@ -26,6 +26,7 @@ const createForm = () =>
           success: true,
           message: 'Form added!'
         };
+        return next();
       })
       .catch(err => {
         ctx.status = 400;
@@ -33,6 +34,7 @@ const createForm = () =>
           success: false,
           message: err.errors ? err.errors.map(el => el.message) : err.message
         };
+        return next();
       });
   };
 
