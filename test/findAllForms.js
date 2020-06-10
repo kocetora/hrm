@@ -1,33 +1,33 @@
-const chai = require('chai')
-const chaiHttp = require('chai-http')
-const jwt = require('jsonwebtoken');
-const jwtSecret = require('../config/jwtConfig');
-
-const expect = chai.expect;
-
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiMatchPattern = require('chai-match-pattern');
+const _ = chaiMatchPattern.getLodashModule();
 const User = require('../db/models/user');
 const Form = require('../db/models/form');
-
-chai.use(chaiHttp)
-
+const server = require('../app');
+const jwt = require('jsonwebtoken');
+const jwtSecret = require('../config/jwtConfig');
+const expect = chai.expect;
+chai.use(chaiHttp);
+chai.use(chaiMatchPattern);
 
 describe('GET FORMS', () => {
     let testToken = '';
 
-    before(async () => {
+    beforeEach(async () => {
         const testUser = await User.create({
-            username:'6561',
-            password:'6561',
-            userid: 6561    
+            username:'3802985',
+            password:'3802985',
+            userid: 3802985    
         });
 
         testToken = await jwt.sign({
-            userid: 6561,
-            username: '6561'
+            userid: 3802985,
+            username: '3802985'
           }, jwtSecret.secret)
 
         const testForm = await Form.create({
-            formid: 6561,
+            formid: 3802985,
             name: "mvlsd",
             surname: "ldslv",
             sex: "female",
@@ -48,16 +48,16 @@ describe('GET FORMS', () => {
         })
     })
 
-    after(done => {
+    afterEach(done => {
         User.destroy({
             where:{
-                userid: 6561
+                userid: 3802985
             }
         })
 
         Form.destroy({
             where:{
-                formid:6561
+                formid:3802985
             }
         })
         done();
@@ -65,9 +65,10 @@ describe('GET FORMS', () => {
 
     it('GET FORMS 200', done => {
         chai.request('http://localhost:3000')
-        .get('/api/forms/')
+        .get('/forms')
         .set({ "Authorization": `Bearer ${testToken}` })
-        .send({})
+        .type('form')
+        .set('content-type', 'application/json')
         .end((error, res) => {
             expect(res).to.have.status(200);
             done();

@@ -1,15 +1,15 @@
-const chai = require('chai')
-const chaiHttp = require('chai-http')
-const jwt = require('jsonwebtoken');
-const jwtSecret = require('../config/jwtConfig');
-
-const expect = chai.expect;
-
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiMatchPattern = require('chai-match-pattern');
+const _ = chaiMatchPattern.getLodashModule();
 const User = require('../db/models/user');
 const Form = require('../db/models/form');
-
-chai.use(chaiHttp)
-
+const server = require('../app');
+const jwt = require('jsonwebtoken');
+const jwtSecret = require('../config/jwtConfig');
+const expect = chai.expect;
+chai.use(chaiHttp);
+chai.use(chaiMatchPattern);
 
 describe('GET FORMS', () => {
     let testToken = '';
@@ -59,9 +59,10 @@ describe('GET FORMS', () => {
 
     it('DELETE FORM 200', done => {
         chai.request('http://localhost:3000')
-        .delete('/api/form/6561')
+        .delete('/form/6561')
         .set({ "Authorization": `Bearer ${testToken}` })
-        .send({})
+        .set('content-type', 'application/json')
+        .type('form')
         .end((error, res) => {
             expect(res).to.have.status(200);
             done();

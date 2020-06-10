@@ -1,14 +1,15 @@
-const chai = require('chai')
-const chaiHttp = require('chai-http')
-const jwt = require('jsonwebtoken');
-const jwtSecret = require('../config/jwtConfig');
-
-const expect = chai.expect;
-
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiMatchPattern = require('chai-match-pattern');
+const _ = chaiMatchPattern.getLodashModule();
 const User = require('../db/models/user');
 const Form = require('../db/models/form');
-
-chai.use(chaiHttp)
+const server = require('../app');
+const jwt = require('jsonwebtoken');
+const jwtSecret = require('../config/jwtConfig');
+const expect = chai.expect;
+chai.use(chaiHttp);
+chai.use(chaiMatchPattern);
 
 
 describe('UPDATE FORM', () => {
@@ -51,7 +52,7 @@ describe('UPDATE FORM', () => {
     afterEach(done => {
         User.destroy({
             where:{
-                username: "94385"
+                userid: 94385
             }
         })
 
@@ -65,8 +66,10 @@ describe('UPDATE FORM', () => {
 
     it('UPDATE FORM 200', done => {
         chai.request('http://localhost:3000')
-        .put('/api/form/94385')
+        .put('/form/94385')
         .set({ "Authorization": `Bearer ${testToken}` })
+        .type('form')
+        .set('content-type', 'application/json')
         .send({
             name: "mvlsd",
             surname: "ldslv",
@@ -93,9 +96,11 @@ describe('UPDATE FORM', () => {
     })
 
     it('UPDATE FORM BAD REQUEST 400', done => {
-        chai.request('http://localhost:5000')
-        .put('/api/form/94385')
+        chai.request('http://localhost:3000')
+        .put('/form/94385')
         .set({ "Authorization": `Bearer ${testToken}` })
+        .type('form')
+        .set('content-type', 'application/json')
         .send({
             name: "mvlsd",
             surname: "ldslv",
@@ -121,4 +126,3 @@ describe('UPDATE FORM', () => {
         })
     })
 })
-

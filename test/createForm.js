@@ -1,23 +1,20 @@
-const chai = require('chai')
-const chaiHttp = require('chai-http')
-
-const expect = chai.expect;
-
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiMatchPattern = require('chai-match-pattern');
+const _ = chaiMatchPattern.getLodashModule();
 const Form = require('../db/models/form');
-
-chai.use(chaiHttp)
-
+const server = require('../app');
+const expect = chai.expect;
+chai.use(chaiHttp);
+chai.use(chaiMatchPattern);
 
 describe('CREATE FORM', () => {
 
-    before(async () => {
-    })
-
-    after(done => {
+    afterEach(done => {
 
         Form.destroy({
             where:{
-                formid:498025
+                formid:19832574
             }
         })
         done();
@@ -25,9 +22,11 @@ describe('CREATE FORM', () => {
 
     it('CREATE FORM 200', done => {
         chai.request('http://localhost:3000')
-        .post('/api/form')
+        .post('/form')
+        .type('form')
+        .set('content-type', 'application/json')
         .send({
-            formid: 498025,
+            formid: 19832574,
             name: "mvlsd",
             surname: "ldslv",
             sex: "female",
@@ -47,16 +46,19 @@ describe('CREATE FORM', () => {
                                 {language:"russian",languageProficiency:"native"}]
         })
         .end((error, res) => {
+            expect(res.body).to.matchPattern({ success: true, message: 'Form added!' });
             expect(res).to.have.status(200)
             done();
         })
     })
 
     it('CREATE FORM BAD REQUEST 400', done => {
-        chai.request('http://localhost:5000')
-        .post('/api/form')
+        chai.request('http://localhost:3000')
+        .post('/form')
+        .type('form')
+        .set('content-type', 'application/json')
         .send({
-            formid: 498025,
+            formid: 19832574,
             name: "mvlsd",
             surname: "ldslv",
             sex: "female",
@@ -70,9 +72,11 @@ describe('CREATE FORM', () => {
                                 {language:"russian",languageProficiency:"native"}]
         })
         .end((error, res) => {
+            expect(res.body).to.matchPattern({
+                success: false,
+                message: _.isArray });
             expect(res).to.have.status(400)
             done();
         })
     })
 })
-

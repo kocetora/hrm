@@ -1,15 +1,15 @@
-const chai = require('chai')
-const chaiHttp = require('chai-http')
-const jwt = require('jsonwebtoken');
-const jwtSecret = require('../config/jwtConfig');
-
-const expect = chai.expect;
-
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiMatchPattern = require('chai-match-pattern');
+const _ = chaiMatchPattern.getLodashModule();
 const User = require('../db/models/user');
 const Form = require('../db/models/form');
-
-chai.use(chaiHttp)
-
+const server = require('../app');
+const jwt = require('jsonwebtoken');
+const jwtSecret = require('../config/jwtConfig');
+const expect = chai.expect;
+chai.use(chaiHttp);
+chai.use(chaiMatchPattern);
 
 describe('FILTER FORMS', () => {
     let testToken = '';
@@ -64,9 +64,45 @@ describe('FILTER FORMS', () => {
     })
 
     it('FILTER FORMS REQUEST 200', done => {
-        chai.request('http://localhost:5000')
-        .put('/api/forms/filter')
+        chai.request('http://localhost:3000')
+        .post('/forms')
         .set({ "Authorization": `Bearer ${testToken}` })
+        .type('form')
+        .set('content-type', 'application/json')
+        .send({
+                sex: "male",
+                education: "higher",
+                age: [{from: 14,to: 100}],
+                workExperience: [{from: 0,to: 1211}],
+                height: [{from: 30,to: 300}],
+                expectedSalary: [{from: 1,to: 100000}],
+                languageSkills: [{language: "english", languageProficiency: "basic"}],
+                professions: [
+                    {profession: "trainee"},
+                    {profession: "dealer"},
+                    {profession: "inspector"},
+                    {profession: "manager"},
+                    {profession: "pit_boss"},
+                    {profession: "waiter"},
+                    {profession: "barman"}],
+                messengers: [
+                    {messenger: "Telegram"},
+                    {messenger: "Viber"},
+                    {messenger: "WhatsApp"}]
+        })
+        .end((error, res) => {
+            expect(res.body).to.matchPattern(_.isArray);
+            expect(res).to.have.status(200)
+            done();
+        })
+    })
+
+    it('FILTER FORMS REQUEST 200', done => {
+        chai.request('http://localhost:3000')
+        .post('/forms')
+        .set({ "Authorization": `Bearer ${testToken}` })
+        .type('form')
+        .set('content-type', 'application/json')
         .send({
                 sex: "male",
                 education: "higher",
@@ -89,9 +125,11 @@ describe('FILTER FORMS', () => {
                     {messenger: "WhatsApp"}]
         })
         .end((error, res) => {
-            expect(res).to.have.status(200)
+            expect(res).to.have.status(400)
+            expect(res.body).to.matchPattern({
+                          success: false,
+                          message: 'неверный синтаксис для типа date: "Invalid date"' });
             done();
         })
     })
 })
-

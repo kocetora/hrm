@@ -1,34 +1,34 @@
-const chai = require('chai')
-const chaiHttp = require('chai-http')
-const jwt = require('jsonwebtoken');
-const jwtSecret = require('../config/jwtConfig');
-
-const expect = chai.expect;
-
+const chai = require('chai');
+const chaiHttp = require('chai-http');
+const chaiMatchPattern = require('chai-match-pattern');
+const _ = chaiMatchPattern.getLodashModule();
 const User = require('../db/models/user');
 const Form = require('../db/models/form');
 const Comment = require('../db/models/comment');
-
-chai.use(chaiHttp)
-
+const server = require('../app');
+const jwt = require('jsonwebtoken');
+const jwtSecret = require('../config/jwtConfig');
+const expect = chai.expect;
+chai.use(chaiHttp);
+chai.use(chaiMatchPattern);
 
 describe('CREATE COMMENT', () => {
     let testToken = '';
 
     before(async () => {
         const testUser = await User.create({
-            username:'3202383',
-            password:'3202383',
-            userid: 3202383    
+            username:'874329',
+            password:'874329',
+            userid: 874329    
         });
 
         testToken = await jwt.sign({
-            userid: 3202383,
-            username: '3202383'
+            userid: 874329,
+            username: '874329'
           }, jwtSecret.secret)
 
         const testForm = await Form.create({
-            formid: 3202383,
+            formid: 874329,
             name: "mvlsd",
             surname: "ldslv",
             sex: "female",
@@ -52,19 +52,19 @@ describe('CREATE COMMENT', () => {
     after(done => {
         User.destroy({
             where:{
-                userid: 3202383
+                userid: 874329
             }
         })
 
         Form.destroy({
             where:{
-                formid:3202383
+                formid:874329
             }
         })
 
         Comment.destroy({
             where:{
-                commentid:3202383
+                commentid:874329
             }
         })
 
@@ -73,11 +73,13 @@ describe('CREATE COMMENT', () => {
 
     it('CREATE COMMENT 200', done => {
         chai.request('http://localhost:3000')
-        .put('/api/form/3202383/comment')
+        .post('/form/874329/comment')
         .set({ "Authorization": `Bearer ${testToken}` })
+        .type('form')
+        .set('content-type', 'application/json')
         .send({
-            userid: 3202383,
-            commentid: 3202383,
+            userid: 874329,
+            commentid: 874329,
             comment: "djvwsv"
         })
         .end((error, res) => {
@@ -86,27 +88,32 @@ describe('CREATE COMMENT', () => {
         })
     })
 
-    it('CREATE COMMENT BAD REQUEST 400', done => {
-        chai.request('http://localhost:3000')
-        .put('/api/form/3202383/comment')
-        .set({ "Authorization": `Bearer ${testToken}` })
-        .send({
-            commentid: 3202383,
-            comment: "djvwsv"
-        })
-        .end((error, res) => {
-            expect(res).to.have.status(400);
-            done();
-        })
-    })    
+    // it('CREATE COMMENT BAD REQUEST 400', done => {
+    //     chai.request('http://localhost:3000')
+    //     .post('/form/874329/comment')
+    //     .set({ "Authorization": `Bearer ${testToken}` })
+    //     .type('form')
+    //     .set('content-type', 'application/json')
+    //     .send({
+    //         commentid: 874329,
+    //         comment: "djvwsv"
+    //     })
+    //     .end((error, res) => {
+    //         console.log(res.body)
+    //         expect(res).to.have.status(400);
+    //         done();
+    //     })
+    // })    
 
     it('CREATE COMMENT BAD REQUEST 400', done => {
         chai.request('http://localhost:3000')
-        .put('/api/form/3202383/comment')
+        .post('/form/874329/comment')
         .set({ "Authorization": `Bearer ${testToken}` })
+        .type('form')
+        .set('content-type', 'application/json')
         .send({
-            userid: 3202383,
-            commentid: 3202383,
+            userid: 874329,
+            commentid: 874329,
             comment: new Array(255 + 1).join( '656' )
         })
         .end((error, res) => {
@@ -115,4 +122,3 @@ describe('CREATE COMMENT', () => {
         })
     })
 })
-
