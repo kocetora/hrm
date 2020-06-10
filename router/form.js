@@ -10,11 +10,15 @@ const Messenger = require('../db/models/messenger');
 const LanguageSkill = require('../db/models/languageSkill');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const jwtSecret = require('../config/jwtConfig');
+const jwt = require('jsonwebtoken');
+const passport = require('koa-passport');
 
 // создает форму
-router.post('/api/form', async ctx => {
-  const body = JSON.parse(ctx.request.body);
-  const formBody = JSON.parse(ctx.request.body);
+router.post('/api/form', 
+async ctx => {
+  const body = {...ctx.request.body};
+  const formBody = {...ctx.request.body};
   delete formBody['professions'];
   delete formBody['languageSkills'];
   delete formBody['messengers'];
@@ -34,12 +38,20 @@ router.post('/api/form', async ctx => {
         ctx.body = data;
       })
       .catch(err => {
-        ctx.body = 'error: ' + err
+        ctx.status = 400;
+      ctx.body = {
+        success: false,
+        message: err.errors ? err.errors.map(el => {
+          return el.message;
+        }) : err.message
+      }
       })
 });
 
 // получает все формы 
-router.get('/api/forms', async ctx => {
+router.get('/api/forms', 
+passport.authenticate('jwt', {session:false}), 
+async ctx => {
   await Form.findAll({
     include: [
       {
@@ -66,13 +78,60 @@ router.get('/api/forms', async ctx => {
       ctx.body = forms
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err.message
+      }
     })
 });
-  
+
+// получает форму по индексу 
+router.get('/api/form/:formid', 
+passport.authenticate('jwt', {session:false}), 
+async ctx => {
+  await Form.findOne({
+    where: {
+      formid: ctx.params.formid
+    },
+    include: [
+      {
+        model: Profession,
+        through: {
+          attributes: []
+        }
+      },
+      {
+        model: Messenger,
+        through: {
+          attributes: []
+        }
+      },
+      {
+        model: LanguageSkill,
+        through: {
+          attributes: []
+        }
+      },
+    ]
+  })
+    .then(forms => {
+        ctx.body = forms 
+    })
+    .catch(err => {
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err
+      }
+    })
+});
+
 // фильтрует формы
-router.post('/api/form/filter', async ctx => {
-  const body = JSON.parse(JSON.stringify(ctx.request.body));
+router.post('/api/forms/filter', passport.authenticate('jwt', {session:false}), 
+async ctx => {
+  console.log(ctx.request.body)
+  const body = ctx.request.body;
   await Form.findAll({
     where: {
       sex: body.sex,
@@ -130,7 +189,7 @@ router.post('/api/form/filter', async ctx => {
     ]
   })
   .then(async forms => {
-    await   await Form.findAll({
+    await Form.findAll({
       where: {
         formid: forms.map(form => {
                 return form.formid
@@ -160,14 +219,18 @@ router.post('/api/form/filter', async ctx => {
       .then(forms => {
         ctx.body = forms
       })
-      .catch(err => {
-        ctx.body = 'error: ' + err
-      })
-  })
+    }).catch(err => {
+      ctx.status = 404;
+      ctx.body = {
+      success: false,
+      message: err.message
+    }
+    })
 });
 
 // удаляет форму
-router.delete('/api/form/:formid', async ctx => {
+router.delete('/api/form/:formid', passport.authenticate('jwt', {session:false}), 
+async ctx => {
   await Form.destroy({
     where: {
         formid: ctx.params.formid
@@ -177,59 +240,116 @@ router.delete('/api/form/:formid', async ctx => {
       ctx.body = { status: 'Form Deleted!' }
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = 404;
+      ctx.body = {
+        success: false,
+        message: err.message
+      }
     })
 });
 
 // обновляет форму
-router.put('/api/form/:formid', async ctx => {
-  const formBody = JSON.parse(JSON.stringify(ctx.request.body));
+router.put('/api/form/:formid', passport.authenticate('jwt', {session:false}), 
+async ctx => {
+  const formBody = {...ctx.request.body};
     await Promise.all([
       Form.update( formBody, 
         { where: { formid: ctx.params.formid } })
     ])
-    .then(() => {
-      ctx.body = { status: 'Form Updated!' }
-    })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
-});
-
-router.post('/api/comment/', async ctx => {
-  // const body = JSON.parse(JSON.stringify(ctx.request.body));
-  const body = JSON.parse(ctx.request.body);
-    await Promise.all([
-      Comment.create(body)
-    ])
-    .then((comment) => {
-      ctx.body = { status: 'Comment created!',
-                   comment: comment }
-    })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
-});
-
-router.get('/api/comment/:formid', async ctx => {
-    await Promise.all([
-      Comment.findAll({
+    .then(async forms => {
+      await Form.findAll({
         where: {
           formid: ctx.params.formid
+        },
+        include: [
+          {
+            model: Profession,
+            through: {
+              attributes: []
+            }
+          },
+          {
+            model: Messenger,
+            through: {
+              attributes: []
+            }
+          },
+          {
+            model: LanguageSkill,
+            through: {
+              attributes: []
+            }
+          },
+        ]
+      })
+        .then(form => {
+          ctx.body = form
+        })
+    }).catch(err => {
+      console.log(err)
+      ctx.status = 400;
+      ctx.body =  {
+        success: false,
+        message: err.message
+      }  
+  })
+});
+
+// создает комментарий
+router.post('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
+async ctx => {
+  const body = {...ctx.request.body};
+    await Promise.all([
+      Comment.create({
+        formid: ctx.params.formid,
+        comment: body.comment,
+        userid: body.userid
+      })
+    ])
+    .then((comment) => {
+      ctx.body = { success: true,
+                   message: comment }
+    })
+    .catch(err => {
+      ctx.status = 400;
+      ctx.body = {
+        success: false,
+        message: err.parent.detail || err.message
+      }
+  })
+});
+
+//получает комментарии
+router.get('/api/form/:formid/comment', passport.authenticate('jwt', {session:false}), 
+async ctx => {
+    await Promise.all([
+      Comment.findAll({
+        attributes: ['comment', 'createdAt', 'userid'],
+        where: {
+          formid: ctx.params.formid
+        },
+        include: {
+          model: User,
+          as: 'user',
+          attributes: ['username']
         }
       })
     ])
     .then((comments) => {
-      ctx.body = comments
+      ctx.body = comments[0]
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = err.status || 500;
+      ctx.body = {
+        success: false,
+        message: err.message
+      }
     })
 });
 
-router.post('/api/user/', async ctx => {
-  // const body = JSON.parse(JSON.stringify(ctx.request.body));
-  const body = JSON.parse(ctx.request.body);
+//регистрация нового пользователя
+router.post('/api/register', async ctx => {
+  const body = ctx.request.body;
     await Promise.all([
       User.create(body)
     ])
@@ -237,34 +357,52 @@ router.post('/api/user/', async ctx => {
       ctx.body = { status: 'User created!' }
     })
     .catch(err => {
-      ctx.body = 'error: ' + err
+      ctx.status = 400;
+      ctx.body = {
+        success: false,
+        message: err.parent.detail
+      }
     })
 });
 
-router.post('/api/users/', async ctx => {
-  // const body = JSON.parse(JSON.stringify(ctx.request.body));
-  const body = JSON.parse(ctx.request.body);
-  console.log(body)
-    await Promise.all([
-      User.findOne({
-        where:{
-          login: body.login
-        }
-      })
-    ])
-    .then(function (user) {
-        console.log(user[0])
-        if (!user[0]) {
-            console.log('skcn')
-        } else if (!user[0].validPassword(body.password)) {
-            console.log('cdns')
-        } else {
-            ctx.body = user;
-        }
-  })
-    .catch(err => {
-      ctx.body = 'error: ' + err
-    })
+//вход в систему
+router.post('/api/login', async(ctx) => {
+  await passport.authenticate('local', function (err, user, info) {
+    if (user == false) {
+      ctx.status = 401;
+      ctx.body = {
+        success: false,
+        message: info.message
+      }
+    } else {
+      ctx.login(user);
+      const payload = {
+        userid: user.userid,
+        username: user.username,
+      };
+      const token = jwt.sign(payload, jwtSecret.secret);
+      
+      ctx.body = {
+        userid: user.userid, 
+        username: user.username, 
+        token: token
+      };
+    }
+  })(ctx);  
 });
+
+//выход из системы
+router.get('/api/logout', async (ctx) => {
+  try {
+      ctx.logout();
+      ctx.body = {status:'User logged out'};
+  } catch (err) {
+      ctx.status = 400;
+      ctx.body = {
+        success: false,
+        message: 'Bad request'
+      }
+  }
+})
 
 module.exports = router;

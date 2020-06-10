@@ -7,57 +7,60 @@ const Form = sequelize.define('form', {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    // allowNull: false
+    allowNull: false,
+    validate: {
+      notNull: { formid: 'formid is required' },
+    },
   },
   name: {
     type: Sequelize.STRING,
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "firstname is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { firstname: 'firstname is required' },
+    },
   },
   surname: {
     type: Sequelize.STRING,
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "secondname is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { surname: 'secondname is required' },
+    },
   },
   sex: {
     type: Sequelize.ENUM,
     values: ['male', 'female'],
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "sex is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { sex: 'sex is required' },
+    },
   },
   born: {
     type: Sequelize.DATEONLY,
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "birthdate is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { born: 'born is required' },
+    },
   },
   height: {
     type: Sequelize.INTEGER,
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "height is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { height: 'height is required' },
+    },
   },
   phoneNumber: {
     type: Sequelize.STRING,
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "phone is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { phoneNumber: 'phone is required' },
+    },
   },
   email: {
     type: Sequelize.STRING,
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "email is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { email: 'email is required' },
+    },
   },
   education: {
     type: Sequelize.ENUM,
@@ -66,27 +69,27 @@ const Form = sequelize.define('form', {
       'secondary',
       'unfinished_higher',
       'higher'],
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "education is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { education: 'education is required' },
+    },
   },
   expectedSalary: {
     type: Sequelize.INTEGER,
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "salary is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { expectedSalary: 'salary is required' },
+    },
   },
   prefferedRegion: {
     type: Sequelize.STRING,
   },
   workExperience: {
     type: Sequelize.INTEGER,
-    // allowNull: false,
-    // validate: {
-    //     notNull: { firstname: "experience is required" },
-    // },
+    allowNull: false,
+    validate: {
+      notNull: { workExperience: 'experience is required' },
+    },
   },
   unemployedFor: {
     type: Sequelize.INTEGER
@@ -96,9 +99,9 @@ const Form = sequelize.define('form', {
   },
 }, { timestamps: false });
 
-// sequelize.sync({force:true}).then(()=>{
-//     console.log("Tables have been created");
-//   }).catch(err=>console.log(err));
+// sequelize.sync({ force: true }).then(() => {
+//   console.log('Tables have been created');
+// }).catch(err => console.log(err));
 
 module.exports = Form;
 

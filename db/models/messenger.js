@@ -8,17 +8,24 @@ const Messenger = sequelize.define('messenger', {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notNull: { messengerid: 'messengerid is required' },
+    },
   },
   messenger: {
     type: Sequelize.ENUM,
     values: [
       'Telegram',
       'Viber',
-      'WhatsApp']
+      'WhatsApp'],
+    allowNull: false,
+    validate: {
+      notNull: { messenger: 'messenger is required' },
+    },
   },
   info: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
   }
 }, { timestamps: false });
 
@@ -27,9 +34,9 @@ const FormMessenger = sequelize.define('form_messenger', {},
 Form.belongsToMany(Messenger, { through: FormMessenger });
 Messenger.belongsToMany(Form, { through: FormMessenger });
 
-// sequelize.sync({force:true}).then(()=>{
-//     console.log("Tables have been created");
-//   }).catch(err=>console.log(err));
+// sequelize.sync({ force: true }).then(() => {
+//   console.log('Tables have been created');
+// }).catch(err => console.log(err));
 
 
 module.exports = Messenger;

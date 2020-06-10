@@ -10,10 +10,17 @@ const Comment = sequelize.define('comment', {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
-    allowNull: false
+    allowNull: false,
+    validate: {
+      notNull: { commentid: 'commentid is required' },
+    },
   },
   comment: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
+    allowNull: false,
+    validate: {
+      notNull: { comment: 'comment is required' },
+    },
   }
 });
 
@@ -29,10 +36,8 @@ Comment.belongsTo(User, {
   as: 'user',
 });
 
-// https://bezkoder.com/sequelize-associate-one-to-many/
-
-// sequelize.sync({force:true}).then(()=>{
-//     console.log("Tables have been created");
-//   }).catch(err=>console.log(err));
+// sequelize.sync({ force: true }).then(() => {
+//   console.log('Tables have been created');
+// }).catch(err => console.log(err));
 
 module.exports = Comment;
