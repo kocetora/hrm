@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app.js",
-    "lint": "eslint --fix app.js && eslint --fix db/*.js && eslint --fix db/models/*.js && eslint --fix config/*.js && eslint --fix router/*.js",
+    "lint": "eslint --fix *.js && eslint --fix **/**/*.js && eslint --fix **/*.js",
     "test": "mocha --exit --recursive --timeout 5000"
   },
   "keywords": [
@@ -16,7 +16,6 @@
   "dependencies": {
     "@koa/cors": "^3.1.0",
     "bcrypt-nodejs": "0.0.3",
-    "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.12.0",
     "koa-bodyparser": "^4.3.0",

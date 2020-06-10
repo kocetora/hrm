@@ -12,78 +12,78 @@ chai.use(chaiHttp);
 chai.use(chaiMatchPattern);
 
 describe('GET FORM', () => {
-    let testToken = '';
+  let testToken = '';
 
-    beforeEach(async () => {
-        const testUser = await User.create({
-            username:'723874',
-            password:'723874',
-            userid: 723874    
-        });
+  beforeEach(async () => {
+    const testUser = await User.create({
+      username: '723874',
+      password: '723874',
+      userid: 723874
+    });
 
-        testToken = await jwt.sign({
-            userid: 723874,
-            username: '723874'
-          }, jwtSecret.secret)
+    testToken = await jwt.sign({
+      userid: 723874,
+      username: '723874'
+    }, jwtSecret.secret);
 
-        const testForm = await Form.create({
-            formid: 723874,
-            name: "mvlsd",
-            surname: "ldslv",
-            sex: "female",
-            born: "2001-05-05",
-            height: 30,
-            phoneNumber: "23438",
-            email: "kldslv@nvd.com",
-            education: "primary",
-            expectedSalary: 688,
-            prefferedRegion: "mldslv",
-            workExperience: 27,
-            unemployedFor: 12,
-            note: "sdv",
-            professions:[{profession:"pit_boss"},{profession:"trainee"}],
-            messengers: [{messenger:"Telegram", info:"pit_boss"},{messenger:"Viber", info:"dealer"}],
-            languageSkills: [{language:"english", languageProficiency:"basic"},
-                                {language:"russian",languageProficiency:"native"}]
-        })
-    })
+    const testForm = await Form.create({
+      formid: 723874,
+      name: 'mvlsd',
+      surname: 'ldslv',
+      sex: 'female',
+      born: '2001-05-05',
+      height: 30,
+      phoneNumber: '23438',
+      email: 'kldslv@nvd.com',
+      education: 'primary',
+      expectedSalary: 688,
+      prefferedRegion: 'mldslv',
+      workExperience: 27,
+      unemployedFor: 12,
+      note: 'sdv',
+      professions: [{ profession: 'pit_boss' }, { profession: 'trainee' }],
+      messengers: [{ messenger: 'Telegram', info: 'pit_boss' }, { messenger: 'Viber', info: 'dealer' }],
+      languageSkills: [{ language: 'english', languageProficiency: 'basic' },
+        { language: 'russian', languageProficiency: 'native' }]
+    });
+  });
 
-    afterEach(done => {
-        User.destroy({
-            where:{
-                userid: 723874
-            }
-        })
+  afterEach(done => {
+    User.destroy({
+      where: {
+        userid: 723874
+      }
+    });
 
-        Form.destroy({
-            where:{
-                formid:723874
-            }
-        })
+    Form.destroy({
+      where: {
+        formid: 723874
+      }
+    });
+    done();
+  });
+
+  it('GET FORM 200 BY ID', done => {
+    chai.request('http://localhost:3000')
+      .get('/form/723874')
+      .set({ 'Authorization': `Bearer ${testToken}` })
+      .type('form')
+      .set('content-type', 'application/json')
+      .end((error, res) => {
+        expect(res).to.have.status(200);
         done();
-    })
+      });
+  });
 
-    it('GET FORM 200 BY ID', done => {
-        chai.request('http://localhost:3000')
-        .get('/form/723874')
-        .set({ "Authorization": `Bearer ${testToken}` })
-        .type('form')
-        .set('content-type', 'application/json')
-        .end((error, res) => {
-            expect(res).to.have.status(200);
-            done();
-        })
-    })
-
-    it('GET FORM 204 BY ID', done => {
-        chai.request('http://localhost:3000')
-        .get('/form/7238741')
-        .set({ "Authorization": `Bearer ${testToken}` })
-        .type('form')
-        .set('content-type', 'application/json')
-        .end((error, res) => {
-            expect(res).to.have.status(204);
-            done();
-        })
-    })
-})
+  it('GET FORM 204 BY ID', done => {
+    chai.request('http://localhost:3000')
+      .get('/form/7238741')
+      .set({ 'Authorization': `Bearer ${testToken}` })
+      .type('form')
+      .set('content-type', 'application/json')
+      .end((error, res) => {
+        expect(res).to.have.status(204);
+        done();
+      });
+  });
+});

@@ -10,73 +10,73 @@ chai.use(chaiMatchPattern);
 
 describe('CREATE FORM', () => {
 
-    afterEach(done => {
+  afterEach(done => {
 
-        Form.destroy({
-            where:{
-                formid:19832574
-            }
-        })
+    Form.destroy({
+      where: {
+        formid: 19832574
+      }
+    });
+    done();
+  });
+
+  it('CREATE FORM 200', done => {
+    chai.request('http://localhost:3000')
+      .post('/form')
+      .type('form')
+      .set('content-type', 'application/json')
+      .send({
+        formid: 19832574,
+        name: 'mvlsd',
+        surname: 'ldslv',
+        sex: 'female',
+        born: '2001-05-05',
+        height: 30,
+        phoneNumber: '23438',
+        email: 'kldslv@nvd.com',
+        education: 'primary',
+        expectedSalary: 688,
+        prefferedRegion: 'mldslv',
+        workExperience: 27,
+        unemployedFor: 12,
+        note: 'sdv',
+        professions: [{ profession: 'pit_boss' }, { profession: 'trainee' }],
+        messengers: [{ messenger: 'Telegram', info: 'pit_boss' }, { messenger: 'Viber', info: 'dealer' }],
+        languageSkills: [{ language: 'english', languageProficiency: 'basic' },
+          { language: 'russian', languageProficiency: 'native' }]
+      })
+      .end((error, res) => {
+        expect(res.body).to.matchPattern({ success: true, message: 'Form added!' });
+        expect(res).to.have.status(200);
         done();
-    })
+      });
+  });
 
-    it('CREATE FORM 200', done => {
-        chai.request('http://localhost:3000')
-        .post('/form')
-        .type('form')
-        .set('content-type', 'application/json')
-        .send({
-            formid: 19832574,
-            name: "mvlsd",
-            surname: "ldslv",
-            sex: "female",
-            born: "2001-05-05",
-            height: 30,
-            phoneNumber: "23438",
-            email: "kldslv@nvd.com",
-            education: "primary",
-            expectedSalary: 688,
-            prefferedRegion: "mldslv",
-            workExperience: 27,
-            unemployedFor: 12,
-            note: "sdv",
-            professions:[{profession:"pit_boss"},{profession:"trainee"}],
-            messengers: [{messenger:"Telegram", info:"pit_boss"},{messenger:"Viber", info:"dealer"}],
-            languageSkills: [{language:"english", languageProficiency:"basic"},
-                                {language:"russian",languageProficiency:"native"}]
-        })
-        .end((error, res) => {
-            expect(res.body).to.matchPattern({ success: true, message: 'Form added!' });
-            expect(res).to.have.status(200)
-            done();
-        })
-    })
-
-    it('CREATE FORM BAD REQUEST 400', done => {
-        chai.request('http://localhost:3000')
-        .post('/form')
-        .type('form')
-        .set('content-type', 'application/json')
-        .send({
-            formid: 19832574,
-            name: "mvlsd",
-            surname: "ldslv",
-            sex: "female",
-            prefferedRegion: "mldslv",
-            workExperience: 27,
-            unemployedFor: 12,
-            note: "sdv",
-            professions:[{profession:"pit_boss"},{profession:"trainee"}],
-            messengers: [{messenger:"Telegram", info:"pit_boss"},{messenger:"Viber", info:"dealer"}],
-            languageSkills: [{language:"english", languageProficiency:"basic"},
-                                {language:"russian",languageProficiency:"native"}]
-        })
-        .end((error, res) => {
-            expect(res.body).to.matchPattern({
-                success: false,
-                message: _.isArray });
-            expect(res).to.have.status(400)
-            done();
-        })
-    })
-})
+  it('CREATE FORM BAD REQUEST 400', done => {
+    chai.request('http://localhost:3000')
+      .post('/form')
+      .type('form')
+      .set('content-type', 'application/json')
+      .send({
+        formid: 19832574,
+        name: 'mvlsd',
+        surname: 'ldslv',
+        sex: 'female',
+        prefferedRegion: 'mldslv',
+        workExperience: 27,
+        unemployedFor: 12,
+        note: 'sdv',
+        professions: [{ profession: 'pit_boss' }, { profession: 'trainee' }],
+        messengers: [{ messenger: 'Telegram', info: 'pit_boss' }, { messenger: 'Viber', info: 'dealer' }],
+        languageSkills: [{ language: 'english', languageProficiency: 'basic' },
+          { language: 'russian', languageProficiency: 'native' }]
+      })
+      .end((error, res) => {
+        expect(res.body).to.matchPattern({
+          success: false,
+          message: _.isArray });
+        expect(res).to.have.status(400);
+        done();
+      });
+  });
+});
